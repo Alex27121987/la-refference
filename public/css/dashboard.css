@@ -1,0 +1,298 @@
+/* dashboard.css - Design exact comme la capture */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a1a;
+  color: #fff;
+  min-height: 100vh;
+}
+
+.dashboard-container {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 3px solid #3498db;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.main-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #5dade2;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+}
+
+.user-info {
+  font-size: 0.9rem;
+  color: #bdc3c7;
+}
+
+.user-info span {
+  color: #ecf0f1;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.current-time {
+  font-size: 0.9rem;
+  color: #ecf0f1;
+  font-weight: 500;
+}
+
+.btn-logout {
+  padding: 10px 25px;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
+}
+
+.btn-logout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.6);
+}
+
+/* Main Grid */
+.main-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0;
+  height: calc(100vh - 80px);
+  overflow: hidden;
+}
+
+/* Sections */
+.section {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #2c3e50;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.section:last-child {
+  border-right: none;
+}
+
+.section-header {
+  padding: 15px 20px;
+  text-align: center;
+}
+
+.section-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Maternelle - Rose/Rouge */
+.maternelle .section-header {
+  background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+}
+
+.maternelle .section-header h2 {
+  color: #fff;
+}
+
+/* Primaire - Bleu */
+.primaire .section-header {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+}
+
+.primaire .section-header h2 {
+  color: #fff;
+}
+
+/* Secondaire - Vert */
+.secondaire .section-header {
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+}
+
+.secondaire .section-header h2 {
+  color: #fff;
+}
+
+/* Section Body */
+.section-body {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #212121;
+  min-height: 0;
+}
+
+.module-group {
+  margin-bottom: 25px;
+}
+
+.module-title {
+  font-size: 1rem;
+  color: #5dade2;
+  margin-bottom: 12px;
+  font-weight: 600;
+  border-bottom: 2px solid #34495e;
+  padding-bottom: 8px;
+}
+
+/* Boutons Admin */
+.module-btn {
+  display: block;
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 10px;
+  background: #34495e;
+  color: #ecf0f1;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.module-btn:hover {
+  background: #425564;
+  transform: translateX(5px);
+}
+
+.module-btn.active {
+  background: #3498db;
+  color: #fff;
+}
+
+/* Liens Scolarité */
+.module-link {
+  display: block;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  background: #2c3e50;
+  color: #ecf0f1;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+}
+
+.module-link:hover {
+  background: #34495e;
+  border-left-color: #3498db;
+  transform: translateX(5px);
+}
+
+.module-link.sub {
+  padding-left: 25px;
+  font-size: 0.85rem;
+  background: #1a252f;
+}
+
+/* Details / Accordion */
+.class-group {
+  margin-bottom: 10px;
+}
+
+.class-group summary {
+  padding: 10px 15px;
+  background: #2c3e50;
+  color: #ecf0f1;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  list-style: none;
+  transition: all 0.3s ease;
+}
+
+.class-group summary::-webkit-details-marker {
+  display: none;
+}
+
+.class-group summary::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+
+.class-group[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.class-group summary:hover {
+  background: #34495e;
+}
+
+.class-group[open] summary {
+  background: #3498db;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+/* Scrollbar */
+.section-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.section-body::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.section-body::-webkit-scrollbar-thumb {
+  background: #34495e;
+  border-radius: 4px;
+}
+
+.section-body::-webkit-scrollbar-thumb:hover {
+  background: #425564;
+}
+
+/* Responsive - Forcer 3 colonnes même sur petit écran */
+@media (max-width: 1200px) {
+  .main-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  }
+  
+  .section-header h2 {
+    font-size: 1.2rem;
+  }
+  
+  .module-btn,
+  .module-link {
+    font-size: 0.8rem;
+    padding: 10px 12px;
+  }
+}

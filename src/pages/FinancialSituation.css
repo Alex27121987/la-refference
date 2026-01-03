@@ -1,0 +1,255 @@
+.financial-situation {
+  background: #1a1a1a;
+  color: #fff;
+  margin: 8px;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.header {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  padding: 5px 12px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-left h1 {
+  font-size: 0.85rem;
+  margin: 0;
+  color: #fff;
+}
+
+.header-right {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.fee-display {
+  font-size: 0.6rem;
+  color: #e3f2fd;
+  white-space: nowrap;
+}
+
+.action-btn {
+  padding: 2px 8px;
+  font-size: 0.6rem;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.btn-payment {
+  background: #27ae60;
+}
+
+.btn-payment:hover {
+  background: #229954;
+}
+
+.btn-sort {
+  background: #9b59b6;
+}
+
+.btn-sort:hover {
+  background: #8e44ad;
+}
+
+.btn-dates {
+  background: #3498db;
+}
+
+.btn-dates:hover {
+  background: #2980b9;
+}
+
+.btn-redistribute {
+  background: #e74c3c;
+}
+
+.btn-redistribute:hover {
+  background: #c0392b;
+}
+
+.btn-diagnostic {
+  background: #f39c12;
+}
+
+.btn-diagnostic:hover {
+  background: #e67e22;
+}
+
+.legend {
+  display: flex;
+  gap: 8px;
+  padding: 4px 8px;
+  background: #212121;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  font-size: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.legend-box {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.legend-box.paid {
+  background: #27ae60;
+}
+
+.legend-box.partial {
+  background: #f39c12;
+}
+
+.legend-box.unpaid {
+  background: #e74c3c;
+}
+
+.legend-box.not-due {
+  background: #95a5a6;
+}
+
+.debt-indicator {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  background: #1a1a1a;
+  border-radius: 6px;
+  padding: 8px;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.6rem;
+}
+
+.data-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.data-table th {
+  padding: 4px 2px;
+  border: 1px solid #1565c0;
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  color: #fff;
+  font-weight: bold;
+  text-align: center;
+}
+
+.data-table td {
+  padding: 4px 2px;
+  border: 1px solid #34495e;
+  text-align: center;
+  color: #fff;
+}
+
+.payment-cell {
+  cursor: pointer;
+  transition: background 0.2s;
+  font-weight: bold;
+}
+
+.payment-cell:hover {
+  background: #34495e !important;
+}
+
+.payment-cell.paid {
+  background: #27ae60;
+  color: #fff;
+}
+
+.payment-cell.partial {
+  background: #f39c12;
+  color: #000;
+}
+
+.payment-cell.unpaid {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.payment-cell.not-due {
+  background: #95a5a6;
+  color: #fff;
+}
+
+.debt-cell {
+  background: #2c3e50;
+  color: #fff;
+  font-weight: bold;
+}
+
+.debt-cell.has-debt {
+  background: #c0392b;
+  color: #fff;
+}
+
+.total-cell {
+  background: #34495e;
+  color: #fff;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .financial-situation {
+    margin: 4px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-right {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .data-table {
+    font-size: 0.5rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 2px 1px;
+  }
+}

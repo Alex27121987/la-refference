@@ -1,0 +1,87 @@
+/* components.css - Composants spécifiques */
+
+/* Form components ultra-compact */
+.form-field input[readonly] {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+}
+
+/* Table ultra-compact overrides */
+.data-table {
+  font-size: 0.6rem;
+}
+
+.data-table th {
+  font-size: 0.58rem;
+  padding: 2px 3px;
+  font-weight: bold;
+}
+
+.data-table td {
+  padding: 2px 3px;
+  font-size: 0.56rem;
+}
+
+/* Action buttons */
+button[onclick*="edit"] {
+  background: #28a745;
+  color: white;
+  padding: 2px 4px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  margin: 0 2px;
+  font-size: 0.6rem;
+}
+
+button[onclick*="delete"] {
+  background: #dc3545;
+  color: white;
+  padding: 2px 4px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  margin: 0 2px;
+  font-size: 0.6rem;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* Compact headers */
+h1 {
+  font-size: 1rem;
+  margin: 6px 0;
+  color: #fff;
+}
+
+h3 {
+  font-size: 0.85rem;
+  margin: 4px 0;
+}
+
+h4 {
+  font-size: 0.9rem;
+  margin: 6px 0;
+}
+
+/* N° column styling */
+.data-table th:first-child,
+.data-table td:first-child {
+  max-width: 30px;
+  text-align: center;
+}
+
+/* Adresse column */
+.data-table td[title] {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Matricule bold */
+.data-table td:nth-child(2) {
+  font-weight: bold;
+}

@@ -1,0 +1,296 @@
+﻿<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Secondaire 4eme HP - Inscription</title>
+  <link rel="stylesheet" href="../../../css/style.css?v=639002278741312727">
+  <link rel="stylesheet" href="../../../css/components.css?v=639002278741312727">
+  <style>
+    .fixed-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #1a1a1a;
+      padding-bottom: 6px;
+    }
+    .form-section {
+      padding: 6px;
+      background: #212121;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body style="background: #1a1a1a; color: #fff; margin: 0; padding: 8px;">
+  <div class="fixed-header">
+    <div style="background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%); padding: 3px 8px; border-radius: 4px; margin-bottom: 4px; box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3); display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <h1 style="font-size:0.7rem; margin:0; color: #fff; line-height: 1.2;">Secondaire 4eme HP — Inscription</h1>
+        <span style="color: #e3f2fd; font-size: 0.7rem;">|</span>
+        <a href="../../../dashboard.html" style="color: #e3f2fd; text-decoration: none; font-size: 0.6rem; line-height: 1.2;">← Retour</a>
+      </div>
+      <div style="display: flex; gap: 3px;">
+        <div id="financeButtonContainer"></div>
+      </div>
+      <div style="display: flex; gap: 2px;">
+        <button class="btn" type="button" onclick="resetForm()" style="padding:1px 4px; font-size:0.5rem; background: #34495e; color: #fff; border: none; border-radius: 2px; cursor: pointer; white-space: nowrap; height: 16px; line-height: 14px;">Annuler</button>
+        <button class="btn btn-success" type="button" onclick="saveClassStudent()" style="padding:1px 4px; font-size:0.5rem; background: #27ae60; color: #fff; border: none; border-radius: 2px; cursor: pointer; white-space: nowrap; height: 16px; line-height: 14px;">Enregistrer</button>
+      </div>
+    </div>
+    <div class="form-section" style="padding: 4px;">
+      <form id="classStudentForm">
+        <input id="section" type="hidden" value="primaire">
+        <input id="classe" type="hidden" readonly>
+      </form>
+      
+      <!-- Ligne 1: Section, Classe, Matricule, Naissance, Sexe, Inscription -->
+      <div style="display: flex; gap: 3px; margin-bottom: 3px;">
+        <button type="button" style="padding: 2px 6px; font-size: 0.55rem; background: #34495e; color: #fff; border: none; border-radius: 3px; white-space: nowrap; height: 18px; line-height: 14px; flex: 0 0 60px;">
+          Section: <span id="displaySection" style="font-weight: bold;">Primaire</span>
+        </button>
+        <button type="button" style="padding: 2px 6px; font-size: 0.55rem; background: #34495e; color: #fff; border: none; border-radius: 3px; white-space: nowrap; height: 18px; line-height: 14px; flex: 0 0 55px;">
+          Classe: <span id="displayClasse" style="font-weight: bold;">3ème</span>
+        </button>
+        <div style="flex: 1; display: flex; align-items: center; gap: 2px; background: #2c3e50; border-radius: 3px; padding: 0 4px; height: 18px;">
+          <label style="font-size: 0.5rem; color: #bdc3c7; white-space: nowrap;">Mat:</label>
+          <input id="matricule" type="text" placeholder="Auto" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.55rem; padding: 0; outline: none; height: 16px;">
+        </div>
+        <div style="flex: 1; display: flex; align-items: center; gap: 2px; background: #2c3e50; border-radius: 3px; padding: 0 4px; height: 18px;">
+          <label style="font-size: 0.5rem; color: #bdc3c7; white-space: nowrap;">Naissance:</label>
+          <input id="dateNaissance" type="date" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.5rem; padding: 0; outline: none; height: 16px; color-scheme: dark;">
+        </div>
+        <div style="flex: 0 0 70px; display: flex; align-items: center; gap: 2px; background: #2c3e50; border-radius: 3px; padding: 0 4px; height: 18px;">
+          <label style="font-size: 0.5rem; color: #bdc3c7;">Sexe:</label>
+          <select id="sexe" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.5rem; padding: 0; outline: none; height: 16px;">
+            <option value="">--</option>
+            <option value="Masculin">M</option>
+            <option value="Féminin">F</option>
+          </select>
+        </div>
+        <div style="flex: 1; display: flex; align-items: center; gap: 2px; background: #2c3e50; border-radius: 3px; padding: 0 4px; height: 18px;">
+          <label style="font-size: 0.5rem; color: #bdc3c7; white-space: nowrap;">Insc:</label>
+          <input id="dateInscription" type="date" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.5rem; padding: 0; outline: none; height: 16px; color-scheme: dark;">
+        </div>
+      </div>
+      
+      <!-- Ligne 2: Nom, Post-nom, Prénom, Téléphone, Adresse -->
+      <div style="display: flex; gap: 3px;">
+        <div style="flex: 2; display: flex; align-items: center; gap: 2px; background: #2c3e50; border-radius: 3px; padding: 0 4px; height: 18px;">
+          <label style="font-size: 0.5rem; color: #bdc3c7;">Nom:</label>
+          <input id="nom" type="text" required style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.55rem; padding: 0; outline: none; height: 16px; font-weight: bold;">
+        </div>
+        <div style="flex: 2; display: flex; align-items: center; gap: 2px; background: #2c3e50; border-radius: 3px; padding: 0 4px; height: 18px;">
+          <label style="font-size: 0.5rem; color: #bdc3c7;">Post-nom:</label>
+          <input id="postnom" type="text" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.55rem; padding: 0; outline: none; height: 16px; font-weight: bold;">
+        </div>
+        <div style="flex: 2; display: flex; align-items: center; gap: 2px; background: #2c3e50; border-radius: 3px; padding: 0 4px; height: 18px;">
+          <label style="font-size: 0.5rem; color: #bdc3c7;">Prénom:</label>
+          <input id="prenom" type="text" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.55rem; padding: 0; outline: none; height: 16px; font-weight: bold;">
+        </div>
+        <div style="flex: 1.5; display: flex; align-items: center; gap: 2px; background: #2c3e50; border-radius: 3px; padding: 0 4px; height: 18px;">
+          <label style="font-size: 0.5rem; color: #bdc3c7;">Tél:</label>
+          <input id="telephone" type="tel" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.55rem; padding: 0; outline: none; height: 16px;">
+        </div>
+        <div style="flex: 3; display: flex; align-items: center; gap: 2px; background: #2c3e50; border-radius: 3px; padding: 0 4px; height: 18px;">
+          <label style="font-size: 0.5rem; color: #bdc3c7;">Adresse:</label>
+          <input id="adresse" type="text" style="flex: 1; background: transparent; border: none; color: #fff; font-size: 0.55rem; padding: 0; outline: none; height: 16px;">
+        </div>
+      </div>
+    </div>
+    <h4 style="font-size:0.8rem; margin:4px 0 0 0; padding: 5px; background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%); color: #fff; border-radius: 4px; text-align: center;">Liste des élèves — Secondaire 4eme HP</h4>
+  </div>
+  
+  <div class="table-container" style="overflow-x: auto; background: #1a1a1a; border-radius: 6px; padding: 8px; margin-top: 5px; height: calc(100vh - 140px); overflow-y: auto;">
+      <table class="data-table" id="rosterTable" style="width:100%; border-collapse:collapse;">
+        <thead style="position: sticky; top: 0; z-index: 50;">
+          <tr style="background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%); color:#fff;">
+            <th style="padding:8px 10px; text-align:center; border:1px solid #1565c0; font-weight:bold; font-size:0.75rem; max-width:40px;">N°</th>
+            <th style="padding:8px 10px; text-align:left; border:1px solid #1565c0; font-weight:bold; font-size:0.8rem;">MATRICULE</th>
+            <th style="padding:8px 10px; text-align:left; border:1px solid #1565c0; font-weight:bold; font-size:0.8rem;">NOM</th>
+            <th style="padding:8px 10px; text-align:left; border:1px solid #1565c0; font-weight:bold; font-size:0.8rem;">POST-NOM</th>
+            <th style="padding:8px 10px; text-align:left; border:1px solid #1565c0; font-weight:bold; font-size:0.8rem;">PRÉNOM</th>
+            <th style="padding:8px 10px; text-align:left; border:1px solid #1565c0; font-weight:bold; font-size:0.8rem;">NAISSANCE</th>
+            <th style="padding:8px 10px; text-align:left; border:1px solid #1565c0; font-weight:bold; font-size:0.8rem;">TÉLÉPHONE</th>
+            <th style="padding:8px 10px; text-align:left; border:1px solid #1565c0; font-weight:bold; font-size:0.8rem;">ADRESSE</th>
+            <th style="padding:8px 10px; text-align:center; border:1px solid #1565c0; font-weight:bold; font-size:0.8rem;">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody id="rosterBody"></tbody>
+      </table>
+    </div>
+
+  <script>window.CLASS_KEY='secondaire-4eme-HP';</script>
+  <script src="../../../js/common.js"></script>
+  <script src="../../../js/forms.js"></script>
+  <script>
+    function parseClassKey(key){
+      if(!key) return {section:'primaire', label:'3ème'};
+      const parts = key.split('-');
+      const section = parts[0] || 'primaire';
+      const num = parts[1] || '3';
+      const ord = ['1ère','2ème','3ème','4ème','5ème','6ème'];
+      const label = ord[parseInt(num)-1] || num;
+      return {section, label};
+    }
+
+    function updateDisplays() {
+      const parsed = parseClassKey(window.CLASS_KEY);
+      document.getElementById('displaySection').textContent = parsed.section.charAt(0).toUpperCase() + parsed.section.slice(1);
+      document.getElementById('displayClasse').textContent = parsed.label;
+    }
+
+    function resetForm(){
+      document.getElementById('classStudentForm').reset();
+      delete document.getElementById('classStudentForm').dataset.editId;
+      const parsed = parseClassKey(window.CLASS_KEY);
+      document.getElementById('section').value = parsed.section;
+      document.getElementById('classe').value = parsed.label;
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('dateInscription').value = today;
+      document.getElementById('matricule').value = '';
+      document.getElementById('nom').value = '';
+      document.getElementById('postnom').value = '';
+      document.getElementById('prenom').value = '';
+      document.getElementById('dateNaissance').value = '';
+      document.getElementById('sexe').value = '';
+      document.getElementById('telephone').value = '';
+      document.getElementById('adresse').value = '';
+      updateDisplays();
+    }
+
+    function renderRoster(){
+      const list=Forms.loadRecords('students')||[];
+      const classKey=window.CLASS_KEY;
+      const rows=Forms.getClassRecords('students', classKey);
+      const tbody=document.getElementById('rosterBody'); 
+      tbody.innerHTML='';
+      
+      if(!rows.length){ 
+        const tr=document.createElement('tr'); 
+        tr.innerHTML='<td colspan="9" style="text-align:center;color:#666;padding:10px;">Aucun élève inscrit.</td>'; 
+        tbody.appendChild(tr); 
+        return; 
+      }
+      
+      rows.forEach((s,idx)=>{ 
+        const tr=document.createElement('tr'); 
+        const bgColor = idx % 2 === 0 ? '#f5f5f5' : '#ffffff';
+        tr.style.backgroundColor = bgColor;
+        tr.onmouseover = function(){ this.style.backgroundColor='#d4e6f1'; };
+        tr.onmouseout = function(){ this.style.backgroundColor=bgColor; };
+        
+        tr.innerHTML='<td style="padding:2px 3px; border:1px solid #666; font-size:0.55rem; color:#000; font-weight:bold; text-align:center;">'+(idx+1)+'</td>'+
+          '<td style="padding:2px 3px; border:1px solid #666; font-size:0.56rem; color:#000; font-weight:bold;">'+s.matricule+'</td>'+
+          '<td style="padding:2px 3px; border:1px solid #666; font-size:0.58rem; color:#000; font-weight:700;">'+escapeHtml(s.nom||'')+'</td>'+
+          '<td style="padding:2px 3px; border:1px solid #666; font-size:0.56rem; color:#000; font-weight:700;">'+escapeHtml(s.postnom||'')+'</td>'+
+          '<td style="padding:2px 3px; border:1px solid #666; font-size:0.56rem; color:#000; font-weight:700;">'+escapeHtml(s.prenom||'')+'</td>'+
+          '<td style="padding:2px 3px; border:1px solid #666; font-size:0.55rem; color:#000; font-weight:700;">'+s.dateNaissance+'</td>'+
+          '<td style="padding:2px 3px; border:1px solid #666; font-size:0.56rem; color:#000; font-weight:bold;">'+(s.telephone||'')+'</td>'+
+          '<td style="padding:2px 3px; border:1px solid #666; font-size:0.56rem; color:#000; font-weight:700; max-width:150px; overflow:hidden; text-overflow:ellipsis;" title="'+escapeHtml(s.adresse||'')+'">'+escapeHtml(s.adresse||'')+'</td>'+
+          '<td style="padding:2px; border:1px solid #666; text-align:center;">'+
+            '<button onclick="editRoster(\''+s.id+'\')" style="background:#28a745; color:#fff; padding:2px 4px; border:none; border-radius:2px; cursor:pointer; margin:0 2px; font-size:0.6rem;" title="Modifier">✎</button>'+
+            '<button onclick="deleteRoster(\''+s.id+'\')" style="background:#dc3545; color:#fff; padding:2px 4px; border:none; border-radius:2px; cursor:pointer; margin:0 2px; font-size:0.6rem;" title="Supprimer">✕</button>'+
+          '</td>';
+        tbody.appendChild(tr); 
+      });
+    }
+
+    function saveClassStudent(){
+      const section=document.getElementById('section').value;
+      const matricule=document.getElementById('matricule').value.trim();
+      const nom=document.getElementById('nom').value.trim();
+      const postnom=document.getElementById('postnom').value.trim();
+      const prenom=document.getElementById('prenom').value.trim();
+      const dateNaissance=document.getElementById('dateNaissance').value;
+      const classe=document.getElementById('classe').value.trim();
+      const sexe=document.getElementById('sexe').value;
+      const dateInscription=document.getElementById('dateInscription').value;
+      const telephone=document.getElementById('telephone').value.trim();
+      const adresse=document.getElementById('adresse').value.trim();
+      if(!nom||!classe){ showNotification('Remplissez les champs obligatoires: nom et classe','warning'); return; }
+      
+      const form=document.getElementById('classStudentForm');
+      const isEditing = !!form.dataset.editId;
+      let finalMatricule=matricule;
+      
+      // Régénérer le matricule si nécessaire
+      const isValidFormat = finalMatricule && finalMatricule.match(/^\d{2}\/\d{2}-\d{3}$/);
+      
+      if(!finalMatricule || (isEditing && dateInscription && !isValidFormat)){ 
+        if(dateInscription) {
+          const d = new Date(dateInscription);
+          const day = String(d.getDate()).padStart(2,'0');
+          const month = String(d.getMonth()+1).padStart(2,'0');
+          
+          // Extraire le numéro du matricule existant
+          let counter;
+          const numMatch = finalMatricule ? finalMatricule.match(/\d+/) : null;
+          if(numMatch) {
+            counter = parseInt(numMatch[0]);
+          } else {
+            const key='cs_la_reference_students_counter'; 
+            counter=parseInt(localStorage.getItem(key)||'0',10)||0; 
+            counter=counter+1; 
+            localStorage.setItem(key,String(counter));
+          }
+          
+          finalMatricule=day+'/'+month+'-'+String(counter).padStart(3,'0'); 
+        } else {
+          const inscDate = new Date().toISOString().split('T')[0];
+          const d = new Date(inscDate);
+          const day = String(d.getDate()).padStart(2,'0');
+          const month = String(d.getMonth()+1).padStart(2,'0');
+          const key='cs_la_reference_students_counter'; 
+          let counter=parseInt(localStorage.getItem(key)||'0',10)||0; 
+          counter=counter+1; 
+          localStorage.setItem(key,String(counter)); 
+          finalMatricule=day+'/'+month+'-'+String(counter).padStart(3,'0');
+        }
+      }
+      
+      const record={ section, matricule: finalMatricule, nom, postnom, prenom, dateNaissance, classe, sexe, dateInscription, telephone, adresse, classKey: window.CLASS_KEY };
+      if(form.dataset.editId) record.id=form.dataset.editId;
+      const res=Forms.saveRecord('students', record);
+      if(res&&res.ok){ showNotification('Élève enregistré.','success'); resetForm(); renderRoster(); } else showNotification('Erreur lors de l\'enregistrement','error');
+    }
+
+    function editRoster(id){
+      const r=Forms.getRecord('students', id);
+      if(!r){ showNotification('Enregistrement introuvable','warning'); return; }
+      document.getElementById('matricule').value=r.matricule||'';
+      document.getElementById('nom').value=r.nom||'';
+      document.getElementById('postnom').value=r.postnom||'';
+      document.getElementById('prenom').value=r.prenom||'';
+      document.getElementById('dateNaissance').value=r.dateNaissance||'';
+      document.getElementById('sexe').value=r.sexe||'';
+      document.getElementById('dateInscription').value=r.dateInscription||'';
+      document.getElementById('telephone').value=r.telephone||'';
+      document.getElementById('adresse').value=r.adresse||'';
+      document.getElementById('classStudentForm').dataset.editId=r.id;
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function deleteRoster(id){ 
+      if(!confirm('Supprimer cet élève ?')) return; 
+      const ok = Forms.deleteRecord('students', id); 
+      if(ok){ showNotification('Supprimé','success'); renderRoster(); } else showNotification('Impossible de supprimer','error'); 
+    }
+
+    function escapeHtml(str){ 
+      return String(str).replace(/[&<>"]/g, function(s){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[s]; }); 
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      const parsed = parseClassKey(window.CLASS_KEY);
+      document.getElementById('section').value = parsed.section;
+      document.getElementById('classe').value = parsed.label;
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('dateInscription').value = today;
+      updateDisplays();
+      renderRoster();
+    });
+  </script>
+  <script>(function(){document.addEventListener('DOMContentLoaded',function(){var container=document.getElementById('financeButtonContainer');if(container&&!document.getElementById('financeBtn')){var btnSituation=document.createElement('button');btnSituation.id='financeBtn';btnSituation.textContent='Situation financière';btnSituation.className='btn btn-warning';btnSituation.style.padding='1px 5px';btnSituation.style.fontSize='0.55rem';btnSituation.style.background='#f39c12';btnSituation.style.color='#000';btnSituation.style.border='none';btnSituation.style.borderRadius='2px';btnSituation.style.cursor='pointer';btnSituation.style.whiteSpace='nowrap';btnSituation.style.height='16px';btnSituation.style.lineHeight='14px';btnSituation.style.fontWeight='500';btnSituation.onclick=function(){var p=window.location.pathname;var idx=p.indexOf('/pages/');var base=(idx===-1?'pages/':p.substring(0,idx+7));window.location.href=base+'finance/situation.html?class='+encodeURIComponent(window.CLASS_KEY);};container.appendChild(btnSituation);var btnPaiement=document.createElement('button');btnPaiement.id='paiementRapideBtn';btnPaiement.textContent='💰 Paiement rapide';btnPaiement.className='btn btn-success';btnPaiement.style.padding='1px 5px';btnPaiement.style.fontSize='0.55rem';btnPaiement.style.background='linear-gradient(135deg, #27ae60 0%, #229954 100%)';btnPaiement.style.color='#fff';btnPaiement.style.border='none';btnPaiement.style.borderRadius='2px';btnPaiement.style.cursor='pointer';btnPaiement.style.whiteSpace='nowrap';btnPaiement.style.height='16px';btnPaiement.style.lineHeight='14px';btnPaiement.style.fontWeight='500';btnPaiement.onclick=function(){var p=window.location.pathname;var idx=p.indexOf('/pages/');var base=(idx===-1?'pages/':p.substring(0,idx+7));window.location.href=base+'finance/paiement-rapide.html';};container.appendChild(btnPaiement);}});})();</script>
+</body>
+</html>

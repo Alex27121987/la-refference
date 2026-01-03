@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paiement rapide</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <link rel="stylesheet" href="../../css/components.css">
+  <style>
+    body { background: #1a1a1a; color: #fff; margin: 0; padding: 8px; }
+    .search-container {
+      background: #212121;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 12px;
+      background: #2c3e50;
+      border: 2px solid #34495e;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+    .search-input:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+    }
+    .search-btn {
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+    }
+    .results-container {
+      background: #212121;
+      border-radius: 8px;
+      padding: 6px;
+      max-height: 550px;
+      overflow-y: auto;
+    }
+    .student-item {
+      background: #2c3e50;
+      padding: 4px 6px;
+      margin-bottom: 2px;
+      border-radius: 3px;
+      transition: all 0.2s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+    .student-item:hover {
+      background: #34495e;
+    }
+    .student-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .student-name {
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: #3498db;
+      margin-bottom: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.2;
+    }
+    .student-details {
+      font-size: 0.65rem;
+      color: #95a5a6;
+      line-height: 1.2;
+    }
+    .quick-amount {
+      width: 100px;
+      padding: 2px 4px;
+      background: #2c3e50;
+      border: 1px solid #34495e;
+      border-radius: 3px;
+      color: #fff;
+      font-size: 0.7rem;
+      text-align: left;
+    }
+    .quick-amount:focus {
+      outline: none;
+      border-color: #3498db;
+    }
+    .select-btn {
+      padding: 4px 10px;
+      background: #27ae60;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.7rem;
+      white-space: nowrap;
+    }
+    .payment-form {
+      background: #212121;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+      display: none;
+    }
+    .payment-form.active {
+      display: block;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: #bdc3c7;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      background: #2c3e50;
+      border: 1px solid #34495e;
+      border-radius: 5px;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    }
+    .selected-student {
+      background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+    .selected-student h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.2rem;
+    }
+    .selected-student p {
+      margin: 5px 0;
+      font-size: 0.9rem;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.1rem;
+      transition: all 0.3s;
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
+    }
+    .btn-cancel {
+      width: 100%;
+      padding: 12px;
+      background: #95a5a6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .fee-info {
+      background: rgba(52, 152, 219, 0.2);
+      padding: 10px;
+      border-radius: 5px;
+      border-left: 4px solid #3498db;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+    }
+    .class-filter-btn {
+      padding: 6px 12px;
+      background: #2c3e50;
+      color: #bdc3c7;
+      border: 2px solid #34495e;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .class-filter-btn:hover {
+      background: #34495e;
+      color: #fff;
+    }
+    .class-filter-btn.active {
+      background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+      color: white;
+      border-color: #2980b9;
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.4);
+    }
+    .history-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+    .history-modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .history-content {
+      background: #212121;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 900px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #34495e;
+    }
+    .history-close {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    .history-table th {
+      background: #34495e;
+      color: #ecf0f1;
+      padding: 6px 8px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+    .history-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #34495e;
+      font-size: 0.75rem;
+      color: #bdc3c7;
+    }
+    .history-table tr:hover {
+      background: #2c3e50;
+    }
+    .history-filter {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .history-filter input,
+    .history-filter select {
+      padding: 8px 12px;
+      background: #2c3e50;
+      border: 1px solid #34495e;
+      border-radius: 5px;
+      color: #fff;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div style="background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%); padding: 12px 20px; border-radius: 6px; margin-bottom: 15px; box-shadow: 0 2px 10px rgba(33, 150, 243, 0.3); display: flex; justify-content: space-between; align-items: center;">
+    <h1 style="margin: 0; font-size: 1.3rem;">💰 Paiement rapide</h1>
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+    <button id="btnRechercher" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem;">🔍 Rechercher</button>
+    <button id="btnSituation" style="background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%); color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem;">📊 Situation</button>
+      <button id="btnActualiser" style="background: #27ae60; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem;" title="Rafraîchir la liste des élèves">🔄 Actualiser</button>
+      <button id="btnHistorique" style="background: #f39c12; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem;">📜 Historique</button>
+      <span style="color: #7f8c8d; margin: 0 5px;">|</span>
+      <button id="btnRapportDate" style="background: linear-gradient(135deg, #16a085 0%, #138d75 100%); color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem; box-shadow: 0 3px 8px rgba(22, 160, 133, 0.4);">📅 Rapport par date</button>
+      <button id="btnEnOrdre" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.9rem; box-shadow: 0 3px 8px rgba(231, 76, 60, 0.4);">📋 En ordre / Pas en ordre</button>
+      <a href="../../dashboard.html" style="color: #e3f2fd; text-decoration: none; font-size: 0.9rem;">← Retour au tableau de bord</a>
+    </div>
+  </div>
+
+  <!-- Filtre par classe -->
+  <div id="classFiltersContainer" style="background: #212121; padding: 10px 15px; border-radius: 8px; margin-bottom: 10px; overflow-x: auto;">
+    <div style="display: flex; gap: 6px; flex-wrap: nowrap; min-width: max-content;">
+      <button class="class-filter-btn active" id="btn-maternelle-1" data-class="maternelle-1">Mat1</button>
+      <button class="class-filter-btn" id="btn-maternelle-2" data-class="maternelle-2">Mat2</button>
+      <button class="class-filter-btn" id="btn-maternelle-3" data-class="maternelle-3">Mat3</button>
+      <button class="class-filter-btn" id="btn-primaire-1" data-class="primaire-1">P1</button>
+      <button class="class-filter-btn" id="btn-primaire-2" data-class="primaire-2">P2</button>
+      <button class="class-filter-btn" id="btn-primaire-3" data-class="primaire-3">P3</button>
+      <button class="class-filter-btn" id="btn-primaire-4" data-class="primaire-4">P4</button>
+      <button class="class-filter-btn" id="btn-primaire-5" data-class="primaire-5">P5</button>
+      <button class="class-filter-btn" id="btn-primaire-6" data-class="primaire-6">P6</button>
+      <button class="class-filter-btn" id="btn-7ebe" data-class="secondaire-7EBE">7EB</button>
+      <button class="class-filter-btn" id="btn-8ebe" data-class="secondaire-8EBE">8EB</button>
+      <button class="class-filter-btn" id="btn-1ere" data-class="secondaire-1ere">1ère</button>
+      <button class="class-filter-btn" id="btn-2eme" data-class="secondaire-2eme">2ème</button>
+      <button class="class-filter-btn" id="btn-3eme" data-class="secondaire-3eme">3ème</button>
+      <button class="class-filter-btn" id="btn-4eme" data-class="secondaire-4eme">4ème</button>
+    </div>
+  </div>
+
+  <div class="search-container">
+    <div class="search-box">
+      <input type="text" id="searchInput" class="search-input" placeholder="Tapez le nom, prénom ou matricule..." autofocus>
+    </div>
+    <div id="resultsContainer" class="results-container" style="display: none;"></div>
+  </div>
+
+  <div id="paymentForm" class="payment-form">
+    <div class="selected-student" id="selectedStudent"></div>
+    
+    <div class="fee-info" id="feeInfo"></div>
+    
+    <div class="form-group">
+      <label>Type de paiement :</label>
+      <select id="paymentType" onchange="updatePaymentType()">
+        <option value="monthly">Frais mensuel</option>
+        <option value="trimester">Frais trimestriel (F1/F2/F3)</option>
+        <option value="both">Les deux (mensuel + trimestriel)</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="monthGroup">
+      <label>Mois :</label>
+      <select id="paymentMonth">
+        <option value="9">Septembre</option>
+        <option value="10">Octobre</option>
+        <option value="11">Novembre</option>
+        <option value="12">Décembre</option>
+        <option value="1">Janvier</option>
+        <option value="2">Février</option>
+        <option value="3">Mars</option>
+        <option value="4">Avril</option>
+        <option value="5">Mai</option>
+        <option value="6">Juin</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="monthlyAmountGroup">
+      <label>Montant frais mensuel (CDF) :</label>
+      <input type="number" id="monthlyAmount" placeholder="Montant">
+    </div>
+
+    <div class="form-group" id="trimesterGroup" style="display: none;">
+      <label>Frais trimestriel (CDF) :</label>
+      <input type="number" id="trimesterAmount" placeholder="Montant F1/F2/F3">
+    </div>
+
+    <button class="btn-submit" onclick="submitPayment()">✓ Enregistrer le paiement</button>
+    <button class="btn-cancel" onclick="cancelPayment()">Annuler</button>
+  </div>
+
+  <!-- Modal Historique des paiements -->
+  <div id="historyModal" class="history-modal">
+    <div class="history-content">
+      <div class="history-header">
+        <h2 style="margin: 0; color: #3498db;">📜 Historique des paiements</h2>
+        <button class="history-close" onclick="closePaymentHistory()">✕ Fermer</button>
+      </div>
+      
+      <div class="history-filter">
+        <input type="text" id="historySearch" placeholder="Rechercher par nom..." style="flex: 1; min-width: 200px;">
+        <select id="historyClassFilter" style="min-width: 150px;">
+          <option value="">Toutes les classes</option>
+          <option value="maternelle">Maternelle</option>
+          <option value="primaire">Primaire</option>
+          <option value="secondaire">Secondaire</option>
+        </select>
+        <select id="historyMonthFilter" style="min-width: 120px;">
+          <option value="">Tous les mois</option>
+          <option value="9">Septembre</option>
+          <option value="10">Octobre</option>
+          <option value="11">Novembre</option>
+          <option value="12">Décembre</option>
+          <option value="1">Janvier</option>
+          <option value="2">Février</option>
+          <option value="3">Mars</option>
+          <option value="4">Avril</option>
+          <option value="5">Mai</option>
+          <option value="6">Juin</option>
+        </select>
+      </div>
+      
+      <div id="historyStats" style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+        <!-- Stats dynamiques -->
+      </div>
+      
+      <div style="overflow-x: auto;">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Élève</th>
+              <th>Classe</th>
+              <th>Mois</th>
+              <th>Montant</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <!-- Contenu dynamique -->
+          </tbody>
+        </table>
+      </div>
+            <style>
+              /* Amélioration du scroll et hauteur des cellules pour navigation stable */
+              #resultsContainer, #globalSearchResults {
+                max-height: 520px !important;
+                overflow-y: auto !important;
+                scroll-behavior: smooth;
+              }
+              .student-item {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 6px 8px;
+                box-sizing: border-box;
+                line-height: 1.1;
+                font-size: 0.95rem;
+              }
+              /* Styles for global search results inserted as plain divs */
+              #globalSearchResults > div {
+                min-height: 44px;
+                padding: 6px 8px !important;
+                display: flex;
+                align-items: center;
+                box-sizing: border-box;
+                line-height: 1.1;
+                font-size: 0.95rem;
+              }
+              /* Rendre la zone interne visible et cliquer sur la scrollbar la fait défiler normalement */
+              .results-container, .history-content {
+                -webkit-overflow-scrolling: touch;
+              }
+            </style>
+    </div>
+  </div>
+
+  <!-- Modal Rapport par date -->
+  <div id="dateReportModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:2000; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#1a1a1a; border-radius:10px; max-width:900px; width:100%; max-height:95vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+      <div style="background:linear-gradient(135deg, #16a085 0%, #138d75 100%); padding:12px 20px; display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="margin:0; color:#fff; font-size:1.1rem;">📅 Rapport des paiements par date</h2>
+        <button onclick="closeDateReport()" style="background:rgba(255,255,255,0.2); color:#fff; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; font-weight:bold; font-size:0.85rem;">✕ Fermer</button>
+      </div>
+      
+      <div style="padding:15px;">
+        <div style="margin-bottom:12px;">
+          <label style="display:block; margin-bottom:6px; font-size:0.85rem; color:#bdc3c7; font-weight:bold;">Sélectionnez une date :</label>
+          <select id="dateReportSelector" onchange="loadDateReport()" style="width:100%; padding:8px; background:#2c3e50; color:#fff; border:2px solid #16a085; border-radius:6px; font-size:0.85rem; cursor:pointer;">
+            <option value="">-- Choisir une date --</option>
+          </select>
+        </div>
+        
+        <div id="dateReportStats" style="display:none; margin-bottom:12px;">
+          <div style="display:flex; gap:8px; margin-bottom:6px;">
+            <div style="flex:1; background:linear-gradient(135deg, #3498db 0%, #2980b9 100%); padding:10px; border-radius:6px; text-align:center;">
+              <div style="font-size:0.65rem; color:#e3f2fd; margin-bottom:4px;">💰 MENSUELS</div>
+              <div id="dateReportMonthly" style="font-size:1.1rem; font-weight:bold; color:#fff;">0 CDF</div>
+              <div id="dateReportMonthlyCount" style="font-size:0.6rem; color:#aed6f1; margin-top:2px;">0 paiement</div>
+            </div>
+            <div style="flex:1; background:linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); padding:10px; border-radius:6px; text-align:center;">
+              <div style="font-size:0.65rem; color:#f4ecf7; margin-bottom:4px;">📋 FRAIS F</div>
+              <div id="dateReportTrimester" style="font-size:1.1rem; font-weight:bold; color:#fff;">0 CDF</div>
+              <div id="dateReportTrimesterCount" style="font-size:0.6rem; color:#d7bde2; margin-top:2px;">0 paiement</div>
+            </div>
+          </div>
+          <div style="background:linear-gradient(135deg, #16a085 0%, #138d75 100%); padding:8px; border-radius:6px; text-align:center;">
+            <div style="font-size:0.7rem; color:#e8f8f5; margin-bottom:3px;">TOTAL CE JOUR</div>
+            <div id="dateReportTotal" style="font-size:1.4rem; font-weight:bold; color:#fff;">0 CDF</div>
+          </div>
+        </div>
+        
+        <div id="dateReportList" style="overflow-x:auto;">
+          <p style="text-align:center; color:#7f8c8d; padding:20px;">Sélectionnez une date pour voir les paiements</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/common.js"></script>
+  <script src="../../js/forms.js"></script>
+  <script>
+    let selectedStudent = null;
+    let allStudents = [];
+    let currentClassFilter = 'maternelle-1';
+    let lastSearchLetter = '';
+    let currentPage = 0;
+    const RESULTS_PER_PAGE = 15;
+    let selectedIndex = -1;
+    let currentResults = [];
+
+    const MONTHLY_FEES = {
+      'maternelle': 0,
+      'primaire': 16500,
+      '7ebe': 25000,
+      '8ebe': 25000,
+      'secondaire': 30000
+    };
+
+    function getMonthlyFee(classKey) {
+      if (!classKey) return 0;
+      if (classKey.startsWith('maternelle')) return MONTHLY_FEES.maternelle;
+      if (classKey.startsWith('primaire')) return MONTHLY_FEES.primaire;
+      if (classKey === 'secondaire-7EBE') return MONTHLY_FEES['7ebe'];
+      if (classKey === 'secondaire-8EBE') return MONTHLY_FEES['8ebe'];
+      if (classKey.startsWith('secondaire')) return MONTHLY_FEES.secondaire;
+      return 0;
+    }
+
+    // Fonction pour obtenir le prochain mois impayé d'un élève
+    // Accepte un second paramètre optionnel `paymentsArray` pour utiliser un tableau de paiements en mémoire
+    function getNextUnpaidMonth(student, paymentsArray) {
+      if (!student.dateInscription) return null;
+      
+      const inscriptionDate = new Date(student.dateInscription);
+      const inscriptionDay = inscriptionDate.getDate();
+      const inscriptionMonth = inscriptionDate.getMonth() + 1; // 1-12
+      const inscriptionYear = inscriptionDate.getFullYear();
+      
+      // Déterminer le premier mois payable
+      let firstPayableMonth = inscriptionMonth;
+      let firstPayableYear = inscriptionYear;
+      
+      // RÈGLE SPÉCIALE AOÛT : Tous les élèves inscrits en août commencent à payer en septembre
+      if (inscriptionMonth === 8) {
+        firstPayableMonth = 9;
+      } else if (inscriptionDay > 25) {
+        // Si inscrit après le 25, le premier mois payable est le mois suivant
+        firstPayableMonth++;
+        if (firstPayableMonth > 12) {
+          firstPayableMonth = 1;
+          firstPayableYear++;
+        }
+      }
+      
+      // Récupérer tous les paiements mensuels de cet élève (pas les frais F)
+      const payments = paymentsArray || JSON.parse(localStorage.getItem('cs_la_reference_payments') || '[]');
+      const studentPayments = payments.filter(p => 
+        p.studentId === student.id && !p.isTrimesterFee
+      );
+      
+      // Créer un Map des montants payés par mois (format: "YYYY-MM" -> total)
+      const paidAmounts = {};
+      studentPayments.forEach(p => {
+        const monthKey = `${p.year}-${String(p.month).padStart(2, '0')}`;
+        paidAmounts[monthKey] = (paidAmounts[monthKey] || 0) + p.amount;
+      });
+      
+      // Chercher le premier mois impayé depuis l'inscription jusqu'à maintenant
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
+      const currentDay = now.getDate();
+      
+      // Correction : Toujours vérifier tous les mois de septembre à décembre de l'année scolaire en cours avant de passer à janvier
+      let checkMonth = firstPayableMonth;
+      let checkYear = firstPayableYear;
+      const monthlyFee = getMonthlyFee(student.classKey);
+
+      // On va jusqu'au mois actuel, mais on force à vérifier décembre avant janvier
+      let stopYear = currentYear;
+      let stopMonth = currentMonth - 1;
+      if (stopMonth < 1) {
+        stopMonth = 12;
+        stopYear--;
+      }
+
+      // Toujours inclure décembre de l'année précédente si on est en janvier ou plus tard
+      while (checkYear < stopYear || (checkYear === stopYear && checkMonth <= stopMonth)) {
+        const monthKey = `${checkYear}-${String(checkMonth).padStart(2, '0')}`;
+        const alreadyPaid = paidAmounts[monthKey] || 0;
+        if (alreadyPaid < monthlyFee) {
+          return {
+            month: checkMonth,
+            year: checkYear,
+            alreadyPaid: alreadyPaid
+          };
+        }
+        checkMonth++;
+        if (checkMonth > 12) {
+          checkMonth = 1;
+          checkYear++;
+        }
+      }
+      return null; // Tous les mois sont payés
+    }
+
+    function loadAllStudents() {
+      allStudents = Forms.loadRecords('students') || [];
+    }
+
+    function filterByClass(classKey) {
+      currentClassFilter = classKey;
+      
+      // Recharger les élèves pour avoir les données à jour
+      loadAllStudents();
+      
+      // Mettre à jour les boutons
+      document.querySelectorAll('.class-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-class="${classKey}"]`).classList.add('active');
+      
+      // Activer automatiquement le champ de recherche
+      const searchInput = document.getElementById('searchInput');
+      searchInput.focus();
+      
+      // Relancer la recherche si du texte est déjà saisi
+      const query = searchInput.value.trim();
+      if (query) {
+        searchStudent();
+      }
+    }
+
+    function searchStudent() {
+      const input = document.getElementById('searchInput');
+      let query = input.value.trim().toLowerCase();
+      
+      if (!query) {
+        document.getElementById('resultsContainer').style.display = 'none';
+        lastSearchLetter = '';
+        currentPage = 0;
+        selectedIndex = -1;
+        return;
+      }
+
+      // Recharger les élèves pour avoir les données à jour
+      loadAllStudents();
+      
+      console.log(`🔎 RECHERCHE INITIÉE - Total élèves chargés: ${allStudents.length}`);
+      console.log(`🎯 Filtre de classe actif: "${currentClassFilter}"`);
+      console.log(`📝 Recherche textuelle: "${query}"`);
+
+      // Réinitialiser la pagination et la sélection à chaque nouvelle recherche
+      lastSearchLetter = query;
+      currentPage = 0;
+      selectedIndex = -1;
+
+      let filteredStudents = allStudents;
+      
+      // Appliquer le filtre de classe (obligatoire)
+      console.log(`\n--- FILTRAGE PAR CLASSE ---`);
+      filteredStudents = allStudents.filter(s => {
+        if (currentClassFilter.includes('1ere') || currentClassFilter.includes('2eme') || 
+            currentClassFilter.includes('3eme') || currentClassFilter.includes('4eme')) {
+          // Pour les classes avec options, utiliser startsWith pour inclure toutes les options
+          const match = s.classKey && s.classKey.startsWith(currentClassFilter);
+          if (match) {
+            console.log(`  ✓ Élève trouvé: ${s.nom} ${s.prenom} (${s.classKey})`);
+          }
+          return match;
+        }
+        const exactMatch = s.classKey === currentClassFilter;
+        if (exactMatch) {
+          console.log(`  ✓ Élève trouvé (exact): ${s.nom} ${s.prenom} (${s.classKey})`);
+        }
+        return exactMatch;
+      });
+      
+      console.log(`🔍 Après filtre classe: ${filteredStudents.length} élèves`);
+
+      // Appliquer la recherche textuelle - commence par la chaîne tapée
+      console.log(`\n--- FILTRAGE PAR TEXTE "${query}" ---`);
+      const allResults = filteredStudents.filter(s => {
+        const nom = (s.nom || '').toLowerCase();
+        const postnom = (s.postnom || '').toLowerCase();
+        const prenom = (s.prenom || '').toLowerCase();
+        const matricule = (s.matricule || '').toLowerCase();
+        
+        const match = nom.startsWith(query) || 
+                      postnom.startsWith(query) || 
+                      prenom.startsWith(query) || 
+                      matricule.startsWith(query);
+        
+        if (match) {
+          console.log(`  ✓ Match: ${nom} ${postnom} ${prenom} (${s.classKey})`);
+        }
+        
+        return match;
+      });
+      
+      console.log(`\n📝 RÉSULTAT FINAL: ${allResults.length} élèves correspondent à "${query}" dans la classe "${currentClassFilter}"`);
+
+      // Si on dépasse le nombre de pages, revenir au début
+      const totalPages = Math.ceil(allResults.length / RESULTS_PER_PAGE);
+      if (currentPage >= totalPages) {
+        currentPage = 0;
+      }
+
+      // Extraire la page courante
+      const start = currentPage * RESULTS_PER_PAGE;
+      const end = start + RESULTS_PER_PAGE;
+      const pagedResults = allResults.slice(start, end);
+      
+      // Sauvegarder les résultats actuels pour la navigation clavier
+      currentResults = pagedResults;
+      selectedIndex = -1;
+
+      displayResults(pagedResults, allResults.length, currentPage + 1, totalPages);
+    }
+
+    function displayResults(results, totalResults = 0, currentPageNum = 1, totalPages = 1) {
+      const container = document.getElementById('resultsContainer');
+      
+      if (results.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#95a5a6; padding:20px;">Aucun élève trouvé</p>';
+        container.style.display = 'block';
+        return;
+      }
+
+      container.innerHTML = '';
+      
+      // Info des résultats
+      if (totalResults > 0) {
+        const pageInfo = document.createElement('div');
+        pageInfo.style.cssText = 'padding: 6px; background: #34495e; border-radius: 4px; margin-bottom: 6px; text-align: center; font-size: 0.7rem; color: #ecf0f1;';
+        pageInfo.innerHTML = `${totalResults} élève(s) trouvé(s) commençant par <span style="color:#3498db; font-weight:bold;">"${lastSearchLetter.toUpperCase()}"</span>`;
+        container.appendChild(pageInfo);
+      }
+      
+      results.forEach((student, idx) => {
+        const fullName = `${student.nom || ''} ${student.postnom || ''} ${student.prenom || ''}`.trim();
+        const classLabel = student.classKey ? student.classKey.replace(/-/g, ' ').toUpperCase() : 'N/A';
+        const monthlyFee = getMonthlyFee(student.classKey);
+        
+        // Déterminer le prochain mois impayé et vérifier si paiement partiel
+        const nextUnpaid = getNextUnpaidMonth(student);
+        let monthInfo = '';
+        if (nextUnpaid) {
+          const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+          
+          // Vérifier le montant déjà payé pour ce mois
+          const payments = JSON.parse(localStorage.getItem('cs_la_reference_payments') || '[]');
+          const monthPayments = payments.filter(p => 
+            p.studentId === student.id && 
+            p.month === nextUnpaid.month && 
+            p.year === nextUnpaid.year && 
+            !p.isTrimesterFee
+          );
+          const paidAmount = monthPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+          const monthlyFee = getMonthlyFee(student.classKey);
+          
+          if (paidAmount > 0 && paidAmount < monthlyFee) {
+            // Paiement partiel - afficher en orange
+            const reste = monthlyFee - paidAmount;
+            monthInfo = `<span style="color:#f39c12; font-weight:bold;">⚡ ${monthNames[nextUnpaid.month - 1]} ${nextUnpaid.year}: Reste ${reste} CDF</span>`;
+          } else {
+            // Impayé complet - afficher en rouge
+            monthInfo = `<span style="color:#e74c3c; font-weight:bold;">⚠ Doit: ${monthNames[nextUnpaid.month - 1]} ${nextUnpaid.year}</span>`;
+          }
+        } else {
+          monthInfo = `<span style="color:#27ae60;">✓ À jour</span>`;
+        }
+        
+        const item = document.createElement('div');
+        item.className = 'student-item';
+        item.setAttribute('data-index', idx);
+        item.setAttribute('data-student-id', student.id);
+        item.style.transition = 'all 0.2s';
+        item.innerHTML = `
+          <div class="student-info">
+            <div class="student-name">${fullName}</div>
+            <div class="student-details">
+              ${student.matricule || 'N/A'} | ${classLabel} | ${monthInfo}
+            </div>
+          </div>
+          <div style="display:flex; gap:4px; align-items:center;" class="payment-fields" id="fields_${student.id}">
+            <input type="number" class="quick-amount" id="amt_${student.id}" placeholder="Montant CDF" value="" style="width:100px;">
+            <input type="date" id="date_${student.id}" value="" placeholder="Date" style="width:95px; padding:2px 4px; background:#2c3e50; border:1px solid #34495e; border-radius:3px; color:#fff; font-size:0.65rem; height:24px;">
+            <label style="font-size:0.65rem; color:#ecf0f1; white-space:nowrap; display:flex; align-items:center; gap:2px;">
+              <input type="checkbox" id="isF_${student.id}" style="width:14px; height:14px;">
+              Frais F
+            </label>
+            <button class="select-btn" id="payBtn_${student.id}" style="display:none;">Confirmer</button>
+          </div>
+        `;
+        
+        container.appendChild(item);
+      });
+
+      container.style.display = 'block';
+      // Appliquer des styles en ligne forcés pour garantir l'affichage uniforme
+      try { forceCellStyle(); } catch(e){ console.warn('forceCellStyle failed', e); }
+    }
+
+    // Force l'application de styles en ligne sur les éléments résultats
+    function forceCellStyle(){
+      const items = document.querySelectorAll('.student-item');
+      items.forEach(it => {
+        // compact row to match target screenshot
+        it.style.minHeight = '44px';
+        it.style.display = 'flex';
+        it.style.alignItems = 'center';
+        it.style.padding = '6px 8px';
+        it.style.boxSizing = 'border-box';
+        it.style.borderRadius = '6px';
+      });
+      // Assurer que le conteneur scrollable a overflow auto
+      const c = document.getElementById('resultsContainer');
+      if(c){ c.style.overflowY = 'auto'; c.style.scrollBehavior = 'smooth'; }
+    }
+
+    function quickPay(studentId) {
+      // Cette fonction n'est plus utilisée avec le nouveau système
+      // On redirige vers le flux clavier
+      startPaymentFlow(studentId);
+      return;
+    }
+
+    function selectStudent(studentId) {
+      selectedStudent = allStudents.find(s => s.id === studentId);
+      if (!selectedStudent) return;
+
+      const fullName = `${selectedStudent.nom || ''} ${selectedStudent.postnom || ''} ${selectedStudent.prenom || ''}`.trim();
+      const classLabel = selectedStudent.classKey ? selectedStudent.classKey.replace(/-/g, ' ').toUpperCase() : 'N/A';
+      const monthlyFee = getMonthlyFee(selectedStudent.classKey);
+
+      document.getElementById('selectedStudent').innerHTML = `
+        <h3>✓ Élève sélectionné</h3>
+        <p><strong>Nom :</strong> ${fullName}</p>
+        <p><strong>Matricule :</strong> ${selectedStudent.matricule || 'N/A'}</p>
+        <p><strong>Classe :</strong> ${classLabel}</p>
+        <p><strong>Téléphone :</strong> ${selectedStudent.telephone || 'N/A'}</p>
+      `;
+
+      document.getElementById('feeInfo').innerHTML = `
+        <strong>💵 Frais mensuel de cette classe :</strong> ${monthlyFee.toLocaleString()} CDF
+      `;
+
+      document.getElementById('monthlyAmount').value = monthlyFee;
+      document.getElementById('resultsContainer').style.display = 'none';
+      document.getElementById('paymentForm').classList.add('active');
+
+      // Définir le mois actuel par défaut
+      const currentMonth = new Date().getMonth() + 1;
+      document.getElementById('paymentMonth').value = currentMonth >= 9 ? currentMonth : currentMonth + 12 > 12 ? currentMonth : 9;
+    }
+
+    function updatePaymentType() {
+      const type = document.getElementById('paymentType').value;
+      const trimesterGroup = document.getElementById('trimesterGroup');
+      const monthlyAmountGroup = document.getElementById('monthlyAmountGroup');
+
+      if (type === 'trimester') {
+        trimesterGroup.style.display = 'block';
+        monthlyAmountGroup.style.display = 'none';
+        document.getElementById('trimesterAmount').value = '';
+      } else if (type === 'both') {
+        trimesterGroup.style.display = 'block';
+        monthlyAmountGroup.style.display = 'block';
+        document.getElementById('trimesterAmount').value = '';
+      } else {
+        trimesterGroup.style.display = 'none';
+        monthlyAmountGroup.style.display = 'block';
+      }
+    }
+
+    function submitPayment() {
+      if (!selectedStudent) {
+        showNotification('Aucun élève sélectionné', 'error');
+        return;
+      }
+
+      const type = document.getElementById('paymentType').value;
+      const month = parseInt(document.getElementById('paymentMonth').value);
+      const monthlyAmount = parseFloat(document.getElementById('monthlyAmount').value) || 0;
+      const trimesterAmount = parseFloat(document.getElementById('trimesterAmount').value) || 0;
+
+      if (type === 'monthly' && monthlyAmount <= 0) {
+        showNotification('Veuillez entrer un montant valide', 'error');
+        return;
+      }
+
+      if (type === 'trimester' && trimesterAmount <= 0) {
+        showNotification('Veuillez entrer un montant trimestriel valide', 'error');
+        return;
+      }
+
+      if (type === 'both' && (monthlyAmount <= 0 || trimesterAmount <= 0)) {
+        showNotification('Veuillez entrer les deux montants', 'error');
+        return;
+      }
+
+      const currentMonth = new Date().getMonth() + 1;
+      const currentYear = new Date().getFullYear();
+      const schoolYear = currentMonth >= 9 ? currentYear : currentYear - 1;
+      const year = month >= 9 ? schoolYear : schoolYear + 1;
+
+      const payments = JSON.parse(localStorage.getItem('cs_la_reference_payments') || '[]');
+      
+      // NOUVEAU SYSTÈME: Gérer les paiements F et mensuels séparément
+      if (type === 'trimester' || type === 'both') {
+        // Traiter le paiement F
+        let remainingFAmount = trimesterAmount;
+        
+        while (remainingFAmount > 0) {
+          const nextF = getNextUnpaidF(selectedStudent.id);
+          
+          if (!nextF) {
+            showNotification(`⚠ Tous les frais F sont payés. Excédent: ${remainingFAmount.toLocaleString()} CDF`, 'warning');
+            break;
+          }
+          
+          const amountForF = Math.min(remainingFAmount, nextF.remainingAmount);
+          
+          const fPayment = {
+            id: 'pay_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9) + '_f',
+            studentId: selectedStudent.id,
+            classKey: selectedStudent.classKey,
+            fType: nextF.fType,
+            amount: amountForF,
+            isFPayment: true,
+            date: new Date().toISOString(),
+            paidBy: 'Admin'
+          };
+          
+          payments.push(fPayment);
+          remainingFAmount -= amountForF;
+        }
+      }
+      
+      if (type === 'monthly' || type === 'both') {
+        // Traiter le paiement mensuel
+        const payment = {
+          id: 'pay_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+          studentId: selectedStudent.id,
+          classKey: selectedStudent.classKey,
+          month: month,
+          year: year,
+          amount: monthlyAmount,
+          date: new Date().toISOString(),
+          paidBy: 'Admin'
+        };
+        payments.push(payment);
+      }
+
+      localStorage.setItem('cs_la_reference_payments', JSON.stringify(payments));
+
+      const total = (type === 'monthly' ? monthlyAmount : type === 'trimester' ? trimesterAmount : monthlyAmount + trimesterAmount);
+      showNotification(`Paiement enregistré avec succès: ${total.toLocaleString()} CDF`, 'success');
+
+      // Réinitialiser le formulaire
+      setTimeout(() => {
+        cancelPayment();
+        document.getElementById('searchInput').value = '';
+      }, 1500);
+    }
+
+    function cancelPayment() {
+      selectedStudent = null;
+      document.getElementById('paymentForm').classList.remove('active');
+      document.getElementById('resultsContainer').style.display = 'none';
+    }
+
+    // Variables globales pour l'état du paiement
+    let paymentState = {
+      mode: 'classes', // 'classes', 'search', 'amount', 'date', 'checkbox', 'confirm'
+      selectedStudentId: null,
+      amount: null,
+      date: null,
+      isF: false
+    };
+    
+    let currentClassIndex = 0;
+    const classButtons = [];
+    
+    // Recherche à chaque frappe avec gestion spéciale pour lettres répétées
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      searchStudent();
+    });
+    
+    // Navigation au clavier GLOBALE
+    document.addEventListener('keydown', function(e) {
+      const items = document.querySelectorAll('.student-item');
+      
+      // Mode CLASSES: Navigation entre les boutons de classe
+      if (paymentState.mode === 'classes') {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          currentClassIndex = (currentClassIndex + 1) % classButtons.length;
+          updateClassSelection();
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          currentClassIndex = currentClassIndex <= 0 ? classButtons.length - 1 : currentClassIndex - 1;
+          updateClassSelection();
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          const selectedBtn = classButtons[currentClassIndex];
+          if (selectedBtn) {
+            const classKey = selectedBtn.getAttribute('data-class');
+            filterByClass(classKey);
+            paymentState.mode = 'search';
+            document.getElementById('searchInput').focus();
+          }
+        }
+      }
+      // Mode SEARCH: Navigation dans les résultats
+      else if (paymentState.mode === 'search') {
+        // Ne rien faire ici - la navigation est gérée dans searchInput.keydown
+      }
+      // Mode AMOUNT: Saisie du montant
+      else if (paymentState.mode === 'amount') {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          const amt = parseFloat(document.getElementById(`amt_${paymentState.selectedStudentId}`).value);
+          if (amt && amt > 0) {
+            paymentState.amount = amt;
+            paymentState.mode = 'date';
+            // Focus sur le champ date
+            const dateInput = document.getElementById(`date_${paymentState.selectedStudentId}`);
+            if (dateInput) {
+              dateInput.focus();
+              dateInput.showPicker && dateInput.showPicker();
+            }
+          } else {
+            showNotification('⚠ Veuillez saisir un montant valide', 'error');
+          }
+        } else if (e.key === 'Escape' || e.key === 'Backspace') {
+          e.preventDefault();
+          cancelPayment();
+        }
+      }
+      // Mode DATE: Sélection de la date
+      else if (paymentState.mode === 'date') {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const dateValue = document.getElementById(`date_${paymentState.selectedStudentId}`).value;
+          if (dateValue) {
+            paymentState.date = dateValue;
+            // Vérifier l'état de la checkbox Frais F
+            const isFChecked = document.getElementById(`isF_${paymentState.selectedStudentId}`).checked;
+            paymentState.isF = isFChecked;
+            paymentState.mode = 'confirm';
+            showInlineConfirmation();
+          } else {
+            showNotification('⚠ Veuillez sélectionner une date', 'error');
+          }
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          const dateValue = document.getElementById(`date_${paymentState.selectedStudentId}`).value;
+          if (dateValue) {
+            paymentState.date = dateValue;
+            // Focus sur la checkbox
+            const checkbox = document.getElementById(`isF_${paymentState.selectedStudentId}`);
+            if (checkbox) checkbox.focus();
+          } else {
+            showNotification('⚠ Veuillez sélectionner une date', 'error');
+          }
+        } else if (e.key === 'Backspace' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          paymentState.mode = 'amount';
+          const amtInput = document.getElementById(`amt_${paymentState.selectedStudentId}`);
+          if (amtInput) {
+            amtInput.focus();
+            amtInput.select();
+          }
+        } else if (e.key === 'Escape') {
+          cancelPayment();
+        }
+      }
+
+      // Mode CONFIRM: Confirmation finale
+      else if (paymentState.mode === 'confirm') {
+        if (e.key === 'Enter' || e.key === 'o' || e.key === 'O') {
+          e.preventDefault();
+          executePayment();
+        } else if (e.key === 'Escape' || e.key === 'n' || e.key === 'N') {
+          e.preventDefault();
+          cancelPayment();
+        }
+      }
+    });
+    
+    // Fonction pour mettre à jour la sélection des classes
+    function updateClassSelection() {
+      classButtons.forEach((btn, idx) => {
+        if (idx === currentClassIndex) {
+          btn.style.border = '3px solid #3498db';
+          btn.style.transform = 'scale(1.1)';
+          btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else {
+          btn.style.border = '';
+          btn.style.transform = '';
+        }
+      });
+    }
+    
+    // Fonction pour mettre à jour la sélection visuelle des élèves
+    function updateSelection(items) {
+      const container = document.getElementById('resultsContainer');
+      items.forEach((item, idx) => {
+        if (idx === selectedIndex) {
+          item.style.background = '#34495e';
+          item.style.border = '2px solid #3498db';
+          // Keep selected item visible using container scroll (works reliably with custom cell heights)
+          try {
+            const itemTop = item.offsetTop;
+            const itemBottom = itemTop + item.offsetHeight;
+            const viewTop = container.scrollTop;
+            const viewBottom = viewTop + container.clientHeight;
+            if (itemTop < viewTop) {
+              container.scrollTop = itemTop - 8;
+            } else if (itemBottom > viewBottom) {
+              container.scrollTop = itemBottom - container.clientHeight + 8;
+            }
+          } catch (e) {
+            // Fallback
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        } else {
+          item.style.background = '';
+          item.style.border = '';
+        }
+      });
+    }
+    
+    // Démarrer le flux de paiement inline
+    function startPaymentFlow(studentId) {
+      paymentState.selectedStudentId = studentId;
+      paymentState.mode = 'amount';
+      
+      // Focus sur le champ montant
+      const amtInput = document.getElementById(`amt_${studentId}`);
+      if (amtInput) {
+        amtInput.focus();
+        amtInput.select();
+        
+        // Empêcher les flèches de modifier le nombre
+        amtInput.addEventListener('keydown', function(e) {
+          if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            e.preventDefault();
+          }
+        }, {once: true});
+      }
+    }
+    
+    // Afficher la confirmation inline
+    function showInlineConfirmation() {
+      const student = allStudents.find(s => s.id === paymentState.selectedStudentId);
+      if (!student) return;
+      
+      const fullName = `${student.nom || ''} ${student.postnom || ''} ${student.prenom || ''}`.trim();
+      const payBtn = document.getElementById(`payBtn_${paymentState.selectedStudentId}`);
+      
+      if (payBtn) {
+        payBtn.style.display = 'block';
+        payBtn.textContent = `Confirmer: ${paymentState.amount.toLocaleString()} CDF`;
+        payBtn.style.background = '#f39c12';
+        payBtn.focus();
+      }
+    }
+    
+
+    
+    // Exécuter le paiement
+    async function executePayment() {
+      const student = allStudents.find(s => s.id === paymentState.selectedStudentId);
+      if (!student) return;
+      
+      const isF = paymentState.isF;
+      const paymentDate = new Date(paymentState.date).toISOString();
+      const payments = JSON.parse(localStorage.getItem('cs_la_reference_payments') || '[]');
+      
+      // Extraire uniquement la date (sans heure) pour comparaison
+      const paymentDateOnly = paymentState.date; // Format YYYY-MM-DD
+      
+      // Vérifier si un paiement existe déjà pour cet élève à cette date
+      const existingPayments = payments.filter(p => 
+        p.studentId === student.id && 
+        p.date && 
+        p.date.startsWith(paymentDateOnly)
+      );
+      
+      if (existingPayments.length > 0) {
+        const totalExisting = existingPayments.reduce((sum, p) => sum + (p.amount || 0) + (p.trimesterFee || 0), 0);
+        const fullName = `${student.nom || ''} ${student.postnom || ''} ${student.prenom || ''}`.trim();
+        const confirm = window.confirm(
+          `⚠️ Il y a déjà ${existingPayments.length} paiement(s) enregistré(s) à cette date pour ${fullName}:\n` +
+          `Total à cette date: ${totalExisting.toLocaleString()} CDF\n\n` +
+          `Voulez-vous enregistrer un autre paiement à la même date?\n` +
+          `Le nouveau montant (${paymentState.amount.toLocaleString()} CDF) sera ajouté.`
+        );
+        
+        if (!confirm) {
+          showNotification('Paiement annulé', 'error');
+          // Remettre le focus sur le champ date
+          paymentState.mode = 'date';
+          const dateInput = document.getElementById(`date_${paymentState.selectedStudentId}`);
+          if (dateInput) dateInput.focus();
+          return;
+        }
+      }
+      
+      // Si c'est un paiement Frais F, traiter normalement
+      if (isF) {
+        const now = new Date();
+        const payment = {
+          id: 'pay_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+          studentId: student.id,
+          classKey: student.classKey,
+          month: now.getMonth() + 1,
+          year: now.getFullYear(),
+          amount: paymentState.amount,
+          trimesterFee: paymentState.amount,
+          isTrimesterFee: true,
+          date: paymentDate,
+          paidBy: 'Admin'
+        };
+        
+        payments.push(payment);
+        localStorage.setItem('cs_la_reference_payments', JSON.stringify(payments));
+        
+        const fullName = `${student.nom || ''} ${student.postnom || ''} ${student.prenom || ''}`.trim();
+        showNotification(`✓ Paiement Frais F enregistré: ${fullName} - ${paymentState.amount.toLocaleString()} CDF`, 'success');
+      } 
+      // Sinon, c'est un paiement mensuel - répartir sur plusieurs mois si nécessaire
+      else {
+        const monthlyFee = getMonthlyFee(student.classKey);
+        if (monthlyFee === 0) {
+          showNotification('⚠ Impossible de déterminer le montant mensuel pour cette classe', 'error');
+          cancelPayment();
+          return;
+        }
+        
+        let remainingAmount = paymentState.amount;
+        const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+        const createdPayments = [];
+        
+        // Tant qu'il reste de l'argent à allouer
+        while (remainingAmount > 0) {
+          // Passer le tableau `payments` en mémoire pour que la fonction tienne compte
+          // des paiements ajoutés pendant cette boucle (évite les doublons pour le même mois)
+          const nextUnpaid = getNextUnpaidMonth(student, payments);
+          if (!nextUnpaid) {
+            // Plus de mois impayés - créer un paiement anticipé pour le prochain mois
+            const now = new Date();
+            let futureMonth = now.getMonth() + 2; // Mois prochain
+            let futureYear = now.getFullYear();
+            if (futureMonth > 12) {
+              futureMonth = 1;
+              futureYear++;
+            }
+            
+            const amountForMonth = Math.min(remainingAmount, monthlyFee);
+            const payment = {
+              id: 'pay_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+              studentId: student.id,
+              classKey: student.classKey,
+              month: futureMonth,
+              year: futureYear,
+              amount: amountForMonth,
+              trimesterFee: 0,
+              isTrimesterFee: false,
+              date: paymentDate,
+              paidBy: 'Admin'
+            };
+            
+            payments.push(payment);
+            createdPayments.push(`${monthNames[futureMonth - 1]} ${futureYear}: ${amountForMonth.toLocaleString()} CDF`);
+            remainingAmount -= amountForMonth;
+            break;
+          }
+          
+          // Calculer combien reste à payer pour ce mois (compléter d'abord le mois partiel)
+          const remainingForMonth = monthlyFee - (nextUnpaid.alreadyPaid || 0);
+          const amountForMonth = Math.min(remainingAmount, remainingForMonth);
+          
+          const payment = {
+            id: 'pay_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            studentId: student.id,
+            classKey: student.classKey,
+            month: nextUnpaid.month,
+            year: nextUnpaid.year,
+            amount: amountForMonth,
+            trimesterFee: 0,
+            isTrimesterFee: false,
+            date: paymentDate,
+            paidBy: 'Admin'
+          };
+          
+          payments.push(payment);
+          
+          // Calculer le total payé pour ce mois après ce paiement
+          const totalPaidForMonth = (nextUnpaid.alreadyPaid || 0) + amountForMonth;
+          const statusIcon = totalPaidForMonth >= monthlyFee ? '✓' : `(${totalPaidForMonth.toLocaleString()}/${monthlyFee.toLocaleString()})`;
+          
+          createdPayments.push(`${monthNames[nextUnpaid.month - 1]} ${nextUnpaid.year}: ${amountForMonth.toLocaleString()} CDF ${statusIcon}`);
+          remainingAmount -= amountForMonth;
+          
+          // Petit délai pour éviter les conflits d'ID
+          await new Promise(resolve => setTimeout(resolve, 1));
+        }
+        
+        localStorage.setItem('cs_la_reference_payments', JSON.stringify(payments));
+        
+        const fullName = `${student.nom || ''} ${student.postnom || ''} ${student.prenom || ''}`.trim();
+        const paymentSummary = createdPayments.join(', ');
+        showNotification(`✓ Paiement réparti: ${fullName} - ${paymentState.amount.toLocaleString()} CDF pour ${createdPayments.length} mois (${paymentSummary})`, 'success');
+      }
+      
+      // Cacher le bouton et réinitialiser les champs
+      const payBtn = document.getElementById(`payBtn_${paymentState.selectedStudentId}`);
+      if (payBtn) payBtn.style.display = 'none';
+      
+      const amtInput = document.getElementById(`amt_${paymentState.selectedStudentId}`);
+      const dateInput = document.getElementById(`date_${paymentState.selectedStudentId}`);
+      const isFCheckbox = document.getElementById(`isF_${paymentState.selectedStudentId}`);
+      
+      if (amtInput) amtInput.value = '';
+      if (dateInput) dateInput.value = '';
+      if (isFCheckbox) isFCheckbox.checked = false;
+      
+      // Réinitialiser l'état
+      paymentState = {
+        mode: 'search',
+        selectedStudentId: null,
+        amount: null,
+        date: null,
+        isF: false
+      };
+      
+      // Rafraîchir l'affichage
+      searchStudent();
+      
+      // Focus sur la recherche
+      document.getElementById('searchInput').focus();
+    }
+    
+    // Annuler le paiement
+    function cancelPayment() {
+      if (paymentState.selectedStudentId) {
+        const payBtn = document.getElementById(`payBtn_${paymentState.selectedStudentId}`);
+        if (payBtn) payBtn.style.display = 'none';
+      }
+      
+      paymentState = {
+        mode: 'search',
+        selectedStudentId: null,
+        amount: null,
+        date: null,
+        isF: false
+      };
+      
+      document.getElementById('searchInput').focus();
+    }
+    
+    // Empêcher la répétition de la même lettre et gérer la navigation
+    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+      const currentValue = this.value.trim().toLowerCase();
+      const key = e.key.toLowerCase();
+      
+      // Gestion des flèches dans la barre de recherche
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        
+        // Utiliser uniquement les items visibles dans le conteneur de résultats
+        const resultsContainer = document.getElementById('resultsContainer');
+        const items = resultsContainer.querySelectorAll('.student-item');
+        
+        if (paymentState.mode === 'search') {
+          // Si ArrowUp et aucun élève sélectionné, retour aux classes
+          if (e.key === 'ArrowUp' && selectedIndex < 0) {
+            paymentState.mode = 'classes';
+            document.getElementById('resultsContainer').style.display = 'none';
+            updateClassSelection();
+            return;
+          }
+          
+          // Si ArrowUp et on est au premier élève, retour aux classes
+          if (e.key === 'ArrowUp' && selectedIndex === 0) {
+            selectedIndex = -1;
+            paymentState.mode = 'classes';
+            document.getElementById('resultsContainer').style.display = 'none';
+            updateClassSelection();
+            return;
+          }
+          
+          if (items.length > 0) {
+            if (e.key === 'ArrowDown') {
+              selectedIndex = selectedIndex < 0 ? 0 : Math.min(selectedIndex + 1, items.length - 1);
+            } else {
+              selectedIndex = selectedIndex <= 0 ? items.length - 1 : selectedIndex - 1;
+            }
+            updateSelection(items);
+          }
+        }
+        return;
+      }
+      
+      // Enter pour sélectionner
+      if (e.key === 'Enter' && paymentState.mode === 'search') {
+        e.preventDefault();
+        const resultsContainer = document.getElementById('resultsContainer');
+        const items = resultsContainer.querySelectorAll('.student-item');
+        if (selectedIndex >= 0 && selectedIndex < items.length) {
+          const selectedItem = items[selectedIndex];
+          const studentId = selectedItem.getAttribute('data-student-id');
+          startPaymentFlow(studentId);
+        }
+        return;
+      }
+      
+      // Backspace pour retourner aux classes si le champ est vide
+      if (e.key === 'Backspace' && !currentValue && paymentState.mode === 'search') {
+        e.preventDefault();
+        paymentState.mode = 'classes';
+        document.getElementById('resultsContainer').style.display = 'none';
+        selectedIndex = -1;
+        updateClassSelection();
+        return;
+      }
+      
+      // Si on tape la même lettre que celle déjà présente
+      if (currentValue && key === currentValue && key.length === 1) {
+        e.preventDefault();
+        // Déclencher la recherche pour passer à la page suivante
+        searchStudent();
+      }
+    });
+
+    // Fonction pour rafraîchir manuellement la liste
+    function refreshStudentList() {
+      loadAllStudents();
+      const count = allStudents.length;
+      showNotification(`✓ Liste actualisée: ${count} élève(s) chargé(s)`, 'success');
+      
+      // Relancer la recherche si du texte est saisi
+      const searchInput = document.getElementById('searchInput');
+      const query = searchInput.value.trim();
+      if (query) {
+        searchStudent();
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      loadAllStudents();
+      console.log(`📚 ${allStudents.length} élèves chargés au démarrage`);
+      
+      // ATTACHER LES ÉVÉNEMENTS AUX BOUTONS DU HEADER
+      document.getElementById('btnRechercher')?.addEventListener('click', openGlobalSearch);
+      document.getElementById('btnSituation')?.addEventListener('click', openClassSituation);
+      document.getElementById('btnActualiser')?.addEventListener('click', refreshStudentList);
+      document.getElementById('btnHistorique')?.addEventListener('click', showPaymentHistory);
+      document.getElementById('btnRapportDate')?.addEventListener('click', showPaymentsByDate);
+      document.getElementById('btnEnOrdre')?.addEventListener('click', showPaymentStatusLists);
+      
+      // Initialiser les boutons de classe AVEC ÉVÉNEMENTS CLICK
+      const btns = document.querySelectorAll('.class-filter-btn');
+      btns.forEach(btn => {
+        classButtons.push(btn);
+        
+        // ATTACHER L'ÉVÉNEMENT CLICK
+        btn.addEventListener('click', function() {
+          const classKey = this.getAttribute('data-class');
+          console.log('Clic sur classe:', classKey);
+          filterByClass(classKey);
+        });
+      });
+      
+      // Trouver le bouton actif
+      classButtons.forEach((btn, idx) => {
+        if (btn.classList.contains('active')) {
+          currentClassIndex = idx;
+        }
+      });
+      
+      // Mettre le focus sur le premier bouton
+      if (classButtons.length > 0) {
+        paymentState.mode = 'classes';
+        updateClassSelection();
+      }
+      
+      // Event listeners pour les filtres d'historique
+      document.getElementById('historySearch')?.addEventListener('input', filterPaymentHistory);
+      document.getElementById('historyClassFilter')?.addEventListener('change', filterPaymentHistory);
+      document.getElementById('historyMonthFilter')?.addEventListener('change', filterPaymentHistory);
+      
+      console.log('✅ Page Paiement Rapide initialisée avec succès');
+    });
+    
+    // Afficher l'historique des paiements
+    function showPaymentHistory() {
+      const modal = document.getElementById('historyModal');
+      modal.classList.add('active');
+      loadPaymentHistory();
+    }
+    
+    // Fermer l'historique
+    function showPaymentsByDate() {
+      const payments = JSON.parse(localStorage.getItem('cs_la_reference_payments') || '[]');
+      
+      // Grouper par date
+      const paymentsByDate = {};
+      payments.forEach(p => {
+        if (!p.date) return;
+        const dateOnly = p.date.split('T')[0];
+        if (!paymentsByDate[dateOnly]) {
+          paymentsByDate[dateOnly] = [];
+        }
+        paymentsByDate[dateOnly].push(p);
+      });
+      
+      const dates = Object.keys(paymentsByDate).sort().reverse();
+      
+      // Remplir le sélecteur
+      const selector = document.getElementById('dateReportSelector');
+      selector.innerHTML = '<option value="">-- Choisir une date --</option>';
+      dates.forEach(date => {
+        const dateObj = new Date(date);
+        const formatted = dateObj.toLocaleDateString('fr-FR', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+        const total = paymentsByDate[date].reduce((sum, p) => sum + (p.amount || 0), 0);
+        const count = paymentsByDate[date].length;
+        selector.innerHTML += `<option value="${date}">${formatted} - ${total.toLocaleString()} CDF (${count} paiement${count > 1 ? 's' : ''})</option>`;
+      });
+      
+      // Stocker les données pour loadDateReport
+      window.paymentsByDateData = paymentsByDate;
+      
+      // Ouvrir le modal
+      document.getElementById('dateReportModal').style.display = 'flex';
+      document.getElementById('dateReportStats').style.display = 'none';
+      document.getElementById('dateReportList').innerHTML = '<p style="text-align:center; color:#7f8c8d; padding:40px;">Sélectionnez une date pour voir les paiements</p>';
+    }
+    
+    function loadDateReport() {
+      const selector = document.getElementById('dateReportSelector');
+      const selectedDate = selector.value;
+      
+      if (!selectedDate) {
+        document.getElementById('dateReportStats').style.display = 'none';
+        document.getElementById('dateReportList').innerHTML = '<p style="text-align:center; color:#7f8c8d; padding:40px;">Sélectionnez une date</p>';
+        return;
+      }
+      
+      const datePayments = window.paymentsByDateData[selectedDate];
+      const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+      
+      console.log('📊 Date sélectionnée:', selectedDate);
+      console.log('📊 Nombre de paiements:', datePayments.length);
+      console.log('📊 Nombre d\'élèves chargés:', allStudents.length);
+      
+      // Séparer les paiements mensuels et trimestriels
+      const monthlyPayments = datePayments.filter(p => !p.isTrimesterFee);
+      const trimesterPayments = datePayments.filter(p => p.isTrimesterFee);
+      
+      const monthlyTotal = monthlyPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+      const trimesterTotal = trimesterPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+      const totalAmount = monthlyTotal + trimesterTotal;
+      
+      // Afficher les stats
+      document.getElementById('dateReportStats').style.display = 'block';
+      document.getElementById('dateReportMonthly').textContent = monthlyTotal.toLocaleString() + ' CDF';
+      document.getElementById('dateReportMonthlyCount').textContent = `${monthlyPayments.length} paiement${monthlyPayments.length > 1 ? 's' : ''}`;
+      document.getElementById('dateReportTrimester').textContent = trimesterTotal.toLocaleString() + ' CDF';
+      document.getElementById('dateReportTrimesterCount').textContent = `${trimesterPayments.length} paiement${trimesterPayments.length > 1 ? 's' : ''}`;
+      document.getElementById('dateReportTotal').textContent = totalAmount.toLocaleString() + ' CDF';
+      
+      // Afficher la liste en tableau compact
+      let html = `
+        <table style="width:100%; border-collapse:collapse; font-size:0.75rem;">
+          <thead>
+            <tr style="background:#16a085; color:#fff; font-weight:bold;">
+              <th style="padding:6px 4px; border:1px solid #1a1a1a; text-align:center;">N°</th>
+              <th style="padding:6px 4px; border:1px solid #1a1a1a;">Heure</th>
+              <th style="padding:6px 4px; border:1px solid #1a1a1a;">Matricule</th>
+              <th style="padding:6px 6px; border:1px solid #1a1a1a;">Nom complet</th>
+              <th style="padding:6px 4px; border:1px solid #1a1a1a;">Classe</th>
+              <th style="padding:6px 4px; border:1px solid #1a1a1a; text-align:center;">Mois/F</th>
+              <th style="padding:6px 6px; border:1px solid #1a1a1a; text-align:right;">Montant</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      datePayments.forEach((p, idx) => {
+        const student = allStudents.find(s => s.id === p.studentId);
+        if (!student) {
+          console.warn('⚠️ Élève non trouvé pour:', p.studentId);
+          return;
+        }
+        
+        const fullName = `${student.nom || ''} ${student.postnom || ''} ${student.prenom || ''}`.trim();
+        const monthInfo = p.isTrimesterFee ? 'F' : monthNames[p.month - 1];
+        const time = new Date(p.date).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+        const className = (student.classKey || '').replace(/-/g, ' ').toUpperCase();
+        const bgColor = idx % 2 === 0 ? '#2c3e50' : '#34495e';
+        
+        html += `
+          <tr style="background:${bgColor}; color:#fff;">
+            <td style="padding:5px 4px; border:1px solid #1a1a1a; text-align:center; font-weight:bold;">${idx + 1}</td>
+            <td style="padding:5px 4px; border:1px solid #1a1a1a; color:#f39c12;">${time}</td>
+            <td style="padding:5px 4px; border:1px solid #1a1a1a; font-weight:bold;">${student.matricule}</td>
+            <td style="padding:5px 6px; border:1px solid #1a1a1a; font-weight:bold;">${fullName}</td>
+            <td style="padding:5px 4px; border:1px solid #1a1a1a; font-size:0.7rem;">${className}</td>
+            <td style="padding:5px 4px; border:1px solid #1a1a1a; text-align:center; color:#3498db; font-weight:bold;">${monthInfo}</td>
+            <td style="padding:5px 6px; border:1px solid #1a1a1a; text-align:right; font-weight:bold; color:#1abc9c;">${p.amount.toLocaleString()}</td>
+          </tr>
+        `;
+      });
+      
+      html += `
+          </tbody>
+        </table>
+      `;
+      
+      console.log('📋 HTML généré, longueur:', html.length);
+      console.log('📋 Nombre de lignes dans le tableau:', datePayments.length);
+      
+      const listContainer = document.getElementById('dateReportList');
+      listContainer.innerHTML = html;
+      console.log('✅ Liste affichée dans le conteneur');
+    }
+    
+  function closeDateReport() {
+    document.getElementById('dateReportModal').style.display = 'none';
+  }
+  
+  function showPaymentStatusLists() {
+    window.location.href = 'status-lists.html';
+  }    function closePaymentHistory() {
+      const modal = document.getElementById('historyModal');
+      modal.classList.remove('active');
+    }
+
+    // Ouvre la page Situation financière pour la classe actuellement sélectionnée
+    function openClassSituation() {
+      // Prefer the currentClassFilter variable; else try to read the active class button
+      let classKey = currentClassFilter || '';
+      try {
+        if (!classKey) {
+          const activeBtn = document.querySelector('.class-filter-btn.active');
+          if (activeBtn && activeBtn.dataset && activeBtn.dataset.class) classKey = activeBtn.dataset.class;
+        }
+
+        // Also include a human-readable label (ex: "PRIMAIRE 1") so situation.html can display it if desired
+        const humanLabel = classKey ? classKey.replace(/-/g, ' ').toUpperCase() : '';
+
+        const p = window.location.pathname;
+        const idx = p.indexOf('/pages/');
+        const base = (idx === -1 ? 'pages/' : p.substring(0, idx + 7));
+
+        if (!classKey) {
+          window.location.href = base + 'finance/situation.html';
+        } else {
+          const qs = '?class=' + encodeURIComponent(classKey) + '&label=' + encodeURIComponent(humanLabel);
+          window.location.href = base + 'finance/situation.html' + qs;
+        }
+      } catch (e) {
+        if (classKey) window.location.href = 'pages/finance/situation.html?class=' + encodeURIComponent(classKey);
+        else window.location.href = 'pages/finance/situation.html';
+      }
+    }
+    
+    // Charger l'historique des paiements
+    function loadPaymentHistory() {
+      const payments = JSON.parse(localStorage.getItem('cs_la_reference_payments') || '[]');
+      const students = allStudents;
+      
+      // Enrichir les paiements avec les infos élèves
+      const enrichedPayments = payments.map(p => {
+        const student = students.find(s => s.id === p.studentId);
+        return {
+          ...p,
+          studentName: student ? `${student.nom || ''} ${student.postnom || ''} ${student.prenom || ''}`.trim() : 'Inconnu',
+          studentMatricule: student ? student.matricule : 'N/A'
+        };
+      });
+      
+      // Trier par date croissante (plus ancien en premier)
+      enrichedPayments.sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      // Calculer les statistiques
+      const totalAmount = enrichedPayments.reduce((sum, p) => sum + (p.amount || 0) + (p.trimesterFee || 0), 0);
+      const monthlyPayments = enrichedPayments.filter(p => !p.isTrimesterFee);
+      const trimesterPayments = enrichedPayments.filter(p => p.isTrimesterFee);
+      
+      // Afficher les stats
+      const statsDiv = document.getElementById('historyStats');
+      statsDiv.innerHTML = `
+        <div style="background: #27ae60; padding: 12px 18px; border-radius: 6px; flex: 1; min-width: 150px;">
+          <div style="font-size: 0.75rem; color: #e8f5e9;">Total encaissé</div>
+          <div style="font-size: 1.2rem; font-weight: bold; color: white;">${totalAmount.toLocaleString()} CDF</div>
+        </div>
+        <div style="background: #3498db; padding: 12px 18px; border-radius: 6px; flex: 1; min-width: 150px;">
+          <div style="font-size: 0.75rem; color: #e3f2fd;">Paiements mensuels</div>
+          <div style="font-size: 1.2rem; font-weight: bold; color: white;">${monthlyPayments.length}</div>
+        </div>
+        <div style="background: #f39c12; padding: 12px 18px; border-radius: 6px; flex: 1; min-width: 150px;">
+          <div style="font-size: 0.75rem; color: #fff3e0;">Frais trimestriels</div>
+          <div style="font-size: 1.2rem; font-weight: bold; color: white;">${trimesterPayments.length}</div>
+        </div>
+      `;
+      
+      // Afficher dans le tableau
+      displayPaymentHistory(enrichedPayments);
+    }
+    
+    // Afficher les paiements dans le tableau
+    function displayPaymentHistory(payments) {
+      const tbody = document.getElementById('historyTableBody');
+      
+      if (payments.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 30px; color: #95a5a6;">Aucun paiement trouvé</td></tr>';
+        return;
+      }
+      
+      const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+      
+      tbody.innerHTML = payments.map(p => {
+        const date = new Date(p.date);
+        const dateStr = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+        const monthStr = p.isTrimesterFee ? 'Frais F' : `${monthNames[p.month - 1]} ${p.year}`;
+        const amount = (p.amount || 0) + (p.trimesterFee || 0);
+        const type = p.isTrimesterFee ? '<span style="background: #f39c12; padding: 2px 8px; border-radius: 3px; font-size: 0.7rem;">Frais F</span>' : '<span style="background: #3498db; padding: 2px 8px; border-radius: 3px; font-size: 0.7rem;">Mensuel</span>';
+        const classLabel = p.classKey ? p.classKey.replace(/-/g, ' ').toUpperCase() : 'N/A';
+        
+        return `
+          <tr>
+            <td>${dateStr}</td>
+            <td><strong>${p.studentName}</strong><br><small style="color: #7f8c8d;">${p.studentMatricule}</small></td>
+            <td>${classLabel}</td>
+            <td>${monthStr}</td>
+            <td style="font-weight: bold; color: #27ae60;">${amount.toLocaleString()} CDF</td>
+            <td>${type}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+    
+    // Filtrer l'historique
+    function filterPaymentHistory() {
+      const searchText = document.getElementById('historySearch').value.toLowerCase();
+      const classFilter = document.getElementById('historyClassFilter').value;
+      const monthFilter = document.getElementById('historyMonthFilter').value;
+      
+      const payments = JSON.parse(localStorage.getItem('cs_la_reference_payments') || '[]');
+      const students = allStudents;
+      
+      // Enrichir et filtrer
+      let filtered = payments.map(p => {
+        const student = students.find(s => s.id === p.studentId);
+        return {
+          ...p,
+          studentName: student ? `${student.nom || ''} ${student.postnom || ''} ${student.prenom || ''}`.trim() : 'Inconnu',
+          studentMatricule: student ? student.matricule : 'N/A'
+        };
+      });
+      
+      // Filtrer par recherche
+      if (searchText) {
+        filtered = filtered.filter(p => 
+          p.studentName.toLowerCase().includes(searchText) || 
+          p.studentMatricule.toLowerCase().includes(searchText)
+        );
+      }
+      
+      // Filtrer par classe
+      if (classFilter) {
+        filtered = filtered.filter(p => p.classKey && p.classKey.startsWith(classFilter));
+      }
+      
+      // Filtrer par mois
+      if (monthFilter) {
+        const month = parseInt(monthFilter);
+        filtered = filtered.filter(p => p.month === month);
+      }
+      
+      // Trier par date croissante (plus ancien en premier)
+      filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+      
+      displayPaymentHistory(filtered);
+    }
+    
+    // Fermer le modal en cliquant à l'extérieur
+    document.addEventListener('click', function(e) {
+      const modal = document.getElementById('historyModal');
+      if (e.target === modal) {
+        closePaymentHistory();
+      }
+    });
+
+    // ===== RECHERCHE GLOBALE =====
+    function openGlobalSearch() {
+      const modal = document.getElementById('globalSearchModal');
+      if (!modal) {
+        createGlobalSearchModal();
+      }
+      document.getElementById('globalSearchModal').style.display = 'flex';
+      document.getElementById('globalSearchInput').focus();
+    }
+
+    function closeGlobalSearch() {
+      document.getElementById('globalSearchModal').style.display = 'none';
+      document.getElementById('globalSearchInput').value = '';
+      document.getElementById('globalSearchResults').innerHTML = '';
+    }
+
+    function createGlobalSearchModal() {
+      const modalHTML = `
+        <div id="globalSearchModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center;">
+          <div style="background: #212121; border-radius: 15px; width: 90%; max-width: 900px; max-height: 90vh; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+            <div style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+              <h2 style="margin: 0; color: white; font-size: 1.5rem;">🔍 Rechercher un élève</h2>
+              <button onclick="closeGlobalSearch()" style="background: rgba(255,255,255,0.2); border: none; color: white; font-size: 1.5rem; cursor: pointer; width: 40px; height: 40px; border-radius: 50%; font-weight: bold;">✕</button>
+            </div>
+            
+            <div style="padding: 12px;">
+              <div style="margin-bottom: 12px;">
+                <input type="text" id="globalSearchInput" placeholder="Tapez le nom, postnom, prénom ou matricule..." style="width: 100%; padding: 12px; background: #2c3e50; border: 2px solid #34495e; border-radius: 8px; color: white; font-size: 1.05rem; outline: none;" onkeyup="performGlobalSearchPayment()">
+                <p style="color: #95a5a6; font-size: 0.9rem; margin-top: 8px;">💡 Vous pouvez chercher plusieurs mots (ex: "KABILA JOSEPH")</p>
+              </div>
+
+              <style>
+                /* Force a limited height for results so scrollbar stays inside modal */
+                #globalSearchResults {
+                  max-height: calc(80vh - 160px) !important;
+                  overflow-y: auto !important;
+                  padding: 6px !important;
+                  margin: 0 !important;
+                  box-sizing: border-box;
+                }
+                #globalSearchResults > div {
+                  margin: 4px 0 !important;
+                  padding: 6px !important;
+                  display: flex !important;
+                  align-items: center !important;
+                  gap: 10px !important;
+                  min-height: 44px !important;
+                  overflow: hidden !important;
+                  box-sizing: border-box !important;
+                }
+              </style>
+
+              <div id="globalSearchResults"></div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+
+    function performGlobalSearchPayment() {
+      const query = document.getElementById('globalSearchInput').value.trim().toLowerCase();
+      const resultsDiv = document.getElementById('globalSearchResults');
+      
+      if (!query) {
+        resultsDiv.innerHTML = '<p style="text-align: center; color: #95a5a6; padding: 40px;">Tapez pour rechercher...</p>';
+        return;
+      }
+
+      loadAllStudents();
+      const searchTerms = query.split(/\\s+/);
+      
+      const results = allStudents.filter(s => {
+        const nom = (s.nom || '').toLowerCase();
+        const postnom = (s.postnom || '').toLowerCase();
+        const prenom = (s.prenom || '').toLowerCase();
+        const matricule = (s.matricule || '').toLowerCase();
+        const fullName = (nom + ' ' + postnom + ' ' + prenom).toLowerCase();
+        
+        return searchTerms.every(term => 
+          nom.includes(term) || 
+          postnom.includes(term) || 
+          prenom.includes(term) || 
+          matricule.includes(term) ||
+          fullName.includes(term)
+        );
+      });
+
+      if (results.length === 0) {
+        resultsDiv.innerHTML = '<p style="text-align: center; color: #e74c3c; padding: 40px; font-size: 1.1rem;">❌ Aucun élève trouvé</p>';
+        return;
+      }
+
+      let html = '<div style="margin-bottom: 15px; padding: 10px; background: #34495e; border-radius: 5px; color: white; font-weight: bold;">';
+      html += results.length + ' élève(s) trouvé(s)';
+      html += '</div>';
+
+      results.forEach(student => {
+        const classLabel = student.classKey ? student.classKey.replace(/-/g, ' ').toUpperCase() : 'N/A';
+        const fullName = ((student.nom || '') + ' ' + (student.postnom || '') + ' ' + (student.prenom || '')).trim();
+
+        // compact single-line result item (no extra margins)
+        html += '<div style="background:#2c3e50; padding:6px; margin-bottom:6px; border-radius:6px; border-left:4px solid #9b59b6; display:flex; align-items:center; gap:10px; min-height:44px; overflow:hidden;">';
+        html += '<div style="flex:1; min-width:0;">';
+        html += '<div style="font-weight:700; color:#9b59b6; font-size:0.98rem; line-height:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + fullName + '</div>';
+        html += '<div style="color:#bdc3c7; font-size:0.82rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + (student.matricule || 'N/A') + '  |  ' + classLabel + '</div>';
+        html += '</div>';
+        html += '<div style="flex:0 0 auto;">';
+        html += '<button onclick="selectStudentFromSearch(\'' + student.id + '\')" style="background:#27ae60; color:#fff; border:none; padding:6px 10px; border-radius:5px; cursor:pointer; font-weight:700; font-size:0.85rem; white-space:nowrap;">✓ Sélectionner</button>';
+        html += '</div>';
+        html += '</div>';
+      });
+
+      resultsDiv.innerHTML = html;
+      // Forcer styles sur les éléments du modal global (en cas de styles inline manquants)
+      try { forceGlobalStyle(); } catch(e){ console.warn('forceGlobalStyle failed', e); }
+    }
+
+    function forceGlobalStyle(){
+      const container = document.getElementById('globalSearchResults');
+      if(!container) return;
+      const nodes = Array.from(container.children).filter(n => n.tagName === 'DIV');
+      nodes.forEach(n=>{
+        n.style.minHeight = '44px';
+        n.style.padding = '6px';
+        n.style.display = 'flex';
+        n.style.alignItems = 'center';
+        n.style.boxSizing = 'border-box';
+        n.style.overflow = 'hidden';
+      });
+    }
+
+    function selectStudentFromSearch(studentId) {
+      closeGlobalSearch();
+      const student = allStudents.find(s => s.id === studentId);
+      if (student) {
+        startPaymentFlow(studentId);
+      }
+    }
+
+    // Fermer le modal de recherche en cliquant à l'extérieur
+    window.addEventListener('click', function(e) {
+      const modal = document.getElementById('globalSearchModal');
+      if (modal && e.target === modal) {
+        closeGlobalSearch();
+      }
+    });
+
+    // ========== NOUVEAU SYSTÈME DE PAIEMENT F ==========
+    // Montants des frais F (définir selon besoin)
+    const F_AMOUNTS = {
+      F1: 50000, // Montant pour F1 (décembre)
+      F2: 50000, // Montant pour F2 (mars)
+      F3: 50000  // Montant pour F3 (juin)
+    };
+
+    // Récupérer les paiements F pour un élève
+    function getStudentFPayments(studentId) {
+      const payments = JSON.parse(localStorage.getItem('cs_la_reference_payments') || '[]');
+      return payments.filter(p => p.studentId === studentId && p.isFPayment);
+    }
+
+    // Calculer le total payé pour un F spécifique (F1, F2 ou F3)
+    function getFPaymentTotal(studentId, fType) {
+      const fPayments = getStudentFPayments(studentId);
+      return fPayments
+        .filter(p => p.fType === fType)
+        .reduce((sum, p) => sum + (p.amount || 0), 0);
+    }
+
+    // Obtenir le prochain F non complètement payé
+    function getNextUnpaidF(studentId) {
+      const fTypes = ['F1', 'F2', 'F3'];
+      for (const fType of fTypes) {
+        const totalPaid = getFPaymentTotal(studentId, fType);
+        const requiredAmount = F_AMOUNTS[fType];
+        if (totalPaid < requiredAmount) {
+          return { fType, paidAmount: totalPaid, remainingAmount: requiredAmount - totalPaid };
+        }
+      }
+      return null; // Tous les F sont payés
+    }
+  </script>
+</body>
+</html>

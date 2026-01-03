@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>État des paiements - C.S LA REFERENCE</title>
+  <link rel="stylesheet" href="../../css/style.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+      min-height: 100vh;
+      padding: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .header h1 {
+      margin: 0;
+      color: #2c3e50;
+      font-size: 1.8rem;
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .filters select, .filters input {
+      padding: 8px 12px;
+      border: 2px solid #3498db;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      background: white;
+    }
+    
+    .filters button {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.9rem;
+      box-shadow: 0 3px 8px rgba(52, 152, 219, 0.4);
+    }
+    
+    .filters button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 12px rgba(52, 152, 219, 0.6);
+    }
+    
+    .stats {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .stat-box {
+      flex: 1;
+      min-width: 200px;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      color: white;
+    }
+    
+    .stat-box.success {
+      background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    }
+    
+    .stat-box.danger {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    }
+    
+    .stat-box.info {
+      background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    }
+    
+    .stat-box .value {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+    
+    .stat-box .label {
+      font-size: 0.9rem;
+      opacity: 0.95;
+    }
+    
+    .lists-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    @media (max-width: 900px) {
+      .lists-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .list-section {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .list-section h2 {
+      margin: 0 0 15px 0;
+      padding-bottom: 10px;
+      border-bottom: 3px solid;
+      font-size: 1.5rem;
+    }
+    
+    .list-section.in-order h2 {
+      color: #27ae60;
+      border-color: #27ae60;
+    }
+    
+    .list-section.not-in-order h2 {
+      color: #e74c3c;
+      border-color: #e74c3c;
+    }
+    
+    .student-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      table-layout: fixed;
+    }
+    
+    .student-table thead {
+      background: #34495e;
+      color: white;
+    }
+    
+    .student-table th {
+      padding: 8px 6px;
+      text-align: left;
+      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .student-table tbody tr {
+      border-bottom: 1px solid #ecf0f1;
+      transition: background 0.2s;
+    }
+    
+    .student-table tbody tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .student-table td {
+      padding: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .student-table .debt {
+      font-weight: bold;
+      color: #e74c3c;
+    }
+    
+    .student-table .ok {
+      font-weight: bold;
+      color: #27ae60;
+    }
+    
+    .back-button {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 12px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+    
+    .back-button a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    
+    .back-button a:hover {
+      text-decoration: underline;
+    }
+    
+    .empty-message {
+      text-align: center;
+      padding: 30px;
+      color: #7f8c8d;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📋 État des paiements par élève</h1>
+      <div class="filters">
+        <select id="classFilter" onchange="loadStudentLists()">
+          <option value="">-- Toutes les classes --</option>
+        </select>
+        <select id="monthFilter" onchange="loadStudentLists()">
+          <option value="">-- Tous les mois --</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Rechercher..." oninput="loadStudentLists()">
+        <button onclick="loadStudentLists()">🔄 Actualiser</button>
+      </div>
+    </div>
+    
+    <div class="stats">
+      <div class="stat-box success">
+        <div class="label">Élèves en ordre</div>
+        <div class="value" id="countInOrder">0</div>
+      </div>
+      <div class="stat-box danger">
+        <div class="label">Élèves pas en ordre</div>
+        <div class="value" id="countNotInOrder">0</div>
+      </div>
+      <div class="stat-box info">
+        <div class="label">Total élèves</div>
+        <div class="value" id="countTotal">0</div>
+      </div>
+    </div>
+    
+    <div class="lists-container">
+      <div class="list-section in-order">
+        <h2>✅ Élèves en ordre (<span id="inOrderCount">0</span>)</h2>
+        <div id="inOrderList"></div>
+      </div>
+      
+      <div class="list-section not-in-order">
+        <h2>⚠️ Élèves pas en ordre (<span id="notInOrderCount">0</span>)</h2>
+        <div id="notInOrderList"></div>
+      </div>
+    </div>
+    
+    <div class="back-button">
+      <a href="paiement-rapide.html">← Retour au paiement rapide</a>
+    </div>
+  </div>
+  
+  <script>
+    // Récupérer les données
+    function getAllStudents() {
+      const data = localStorage.getItem('cs_la_reference_students');
+      return data ? JSON.parse(data) : [];
+    }
+    
+    function getAllPayments() {
+      const data = localStorage.getItem('cs_la_reference_payments');
+      return data ? JSON.parse(data) : [];
+    }
+    
+    // Calculer les mois dus selon la règle:
+    // - Inscrit avant le 25 → doit payer le mois d'inscription
+    // - Inscrit après le 25 → commence le mois suivant
+    // - Ne JAMAIS compter le mois en cours
+    function getMonthsSinceInscription(inscriptionDate) {
+      const inscDate = new Date(inscriptionDate);
+      const today = new Date();
+      
+      // Déterminer le premier mois à payer
+      let firstPaymentMonth;
+      if (inscDate.getDate() <= 25) {
+        // Inscrit avant le 25 → commence ce mois
+        firstPaymentMonth = new Date(inscDate.getFullYear(), inscDate.getMonth(), 1);
+      } else {
+        // Inscrit après le 25 → commence le mois suivant
+        firstPaymentMonth = new Date(inscDate.getFullYear(), inscDate.getMonth() + 1, 1);
+      }
+      
+      // Dernier mois dû = mois PRÉCÉDENT (pas le mois en cours)
+      const lastDueMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      
+      // Si le premier mois est après le dernier mois dû, aucun mois n'est dû
+      if (firstPaymentMonth > lastDueMonth) {
+        return 0;
+      }
+      
+      // Compter les mois entre le premier et le dernier mois dû (inclus)
+      let months = 0;
+      let current = new Date(firstPaymentMonth);
+      while (current <= lastDueMonth) {
+        months++;
+        current.setMonth(current.getMonth() + 1);
+      }
+      
+      return months;
+    }
+    
+    // Déterminer si un élève est en ordre
+    function isStudentInOrder(student, payments) {
+      const studentPayments = payments.filter(p => p.studentId === student.id);
+      const totalPaid = studentPayments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+      
+      const monthsSinceInsc = getMonthsSinceInscription(student.dateInscription);
+      
+      let monthlyFee = 0;
+      if (student.niveau === 'Maternelle') monthlyFee = 0;
+      else if (student.niveau === 'Primaire') monthlyFee = 16500;
+      else if (student.classe === '7EBE' || student.classe === '8EBE') monthlyFee = 25000;
+      else monthlyFee = 30000;
+      
+      const expectedAmount = monthsSinceInsc * monthlyFee;
+      
+      return totalPaid >= expectedAmount;
+    }
+    
+    // Calculer le solde (positif = en avance, négatif = en retard)
+    function getBalance(student, payments) {
+      const studentPayments = payments.filter(p => p.studentId === student.id);
+      const totalPaid = studentPayments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+      
+      const monthsSinceInsc = getMonthsSinceInscription(student.dateInscription);
+      
+      let monthlyFee = 0;
+      if (student.niveau === 'Maternelle') monthlyFee = 0;
+      else if (student.niveau === 'Primaire') monthlyFee = 16500;
+      else if (student.classe === '7EBE' || student.classe === '8EBE') monthlyFee = 25000;
+      else monthlyFee = 30000;
+      
+      const expectedAmount = monthsSinceInsc * monthlyFee;
+      
+      return totalPaid - expectedAmount;
+    }
+    
+    // Charger les classes dans le filtre
+    function loadClassFilter() {
+      const students = getAllStudents();
+      const classesInDb = [...new Set(students.map(s => s.classe))];
+      
+      const classFilter = document.getElementById('classFilter');
+      classFilter.innerHTML = '<option value="">-- Toutes les classes --</option>';
+      
+      // Ordre des classes
+      const classOrder = [
+        // Maternelle
+        '1ère Maternelle', '2ème Maternelle', '3ème Maternelle',
+        // Primaire
+        '1ère', '2ème', '3ème', '4ème', '5ème', '6ème',
+        // Secondaire cycle 1
+        '7EBE', '8EBE',
+        // Secondaire cycle 2 - 1ère année
+        '1ère HP', '1ère TCC', '1ère MA', '1ère MG', '1ère CG', '1ère Construction', '1ère ELEC',
+        // 2ème année
+        '2ème HP', '2ème TCC', '2ème MA', '2ème MG', '2ème CG', '2ème Construction', '2ème ELEC',
+        // 3ème année
+        '3ème HP', '3ème TCC', '3ème MA', '3ème MG', '3ème CG', '3ème Construction', '3ème ELEC', '3ème A',
+        // 4ème année
+        '4ème HP', '4ème TCC', '4ème MA', '4ème MG', '4ème CG', '4ème Construction', '4ème ELEC'
+      ];
+      
+      // Ajouter les classes dans l'ordre défini
+      classOrder.forEach(classe => {
+        if (classesInDb.includes(classe)) {
+          const option = document.createElement('option');
+          option.value = classe;
+          option.textContent = classe;
+          classFilter.appendChild(option);
+        }
+      });
+      
+      // Ajouter les classes non listées (au cas où)
+      classesInDb.forEach(classe => {
+        if (!classOrder.includes(classe)) {
+          const option = document.createElement('option');
+          option.value = classe;
+          option.textContent = classe + ' (autre)';
+          classFilter.appendChild(option);
+        }
+      });
+    }
+    
+    // Charger les mois dans le filtre
+    function loadMonthFilter() {
+      const monthFilter = document.getElementById('monthFilter');
+      monthFilter.innerHTML = '<option value="">-- Tous les mois --</option>';
+      
+      const months = [
+        { value: '1', text: 'Septembre' },
+        { value: '2', text: 'Octobre' },
+        { value: '3', text: 'Novembre' },
+        { value: '4', text: 'Décembre' },
+        { value: '5', text: 'Janvier' },
+        { value: '6', text: 'Février' },
+        { value: '7', text: 'Mars' },
+        { value: '8', text: 'Avril' },
+        { value: '9', text: 'Mai' },
+        { value: '10', text: 'Juin' },
+        { value: '11', text: 'Frais 1er Trimestre (F1)' },
+        { value: '12', text: 'Frais 2ème Trimestre (F2)' },
+        { value: '13', text: 'Frais 3ème Trimestre (F3)' }
+      ];
+      
+      months.forEach(month => {
+        const option = document.createElement('option');
+        option.value = month.value;
+        option.textContent = month.text;
+        monthFilter.appendChild(option);
+      });
+    }
+    
+    // Charger et afficher les listes
+    function loadStudentLists() {
+      const students = getAllStudents();
+      const allPayments = getAllPayments();
+      const classFilter = document.getElementById('classFilter').value;
+      const monthFilter = document.getElementById('monthFilter').value;
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      
+      // Filtrer les élèves
+      let filteredStudents = students;
+      
+      if (classFilter) {
+        filteredStudents = filteredStudents.filter(s => s.classe === classFilter);
+      }
+      
+      if (searchTerm) {
+        filteredStudents = filteredStudents.filter(s => 
+          s.nom.toLowerCase().includes(searchTerm) ||
+          s.postnom.toLowerCase().includes(searchTerm) ||
+          s.prenom.toLowerCase().includes(searchTerm) ||
+          s.matricule.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      // Séparer en deux listes
+      const inOrder = [];
+      const notInOrder = [];
+      
+      filteredStudents.forEach(student => {
+        // Calculer le montant total payé (tous les mois)
+        const allStudentPayments = allPayments.filter(p => p.studentId === student.id);
+        const totalPaid = allStudentPayments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+        
+        // Calculer le montant payé pour le mois filtré (si un mois est sélectionné)
+        let filteredPaid = totalPaid;
+        if (monthFilter) {
+          const monthPayments = allStudentPayments.filter(p => p.month === parseInt(monthFilter));
+          filteredPaid = monthPayments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+          
+          // Si un mois est sélectionné, ne montrer que les élèves qui ont payé ce mois
+          if (filteredPaid === 0) {
+            return; // Skip cet élève
+          }
+        }
+        
+        const balance = getBalance(student, allPayments);
+        if (isStudentInOrder(student, allPayments)) {
+          inOrder.push({ student, balance, totalPaid, filteredPaid });
+        } else {
+          notInOrder.push({ student, balance, totalPaid, filteredPaid });
+        }
+      });
+      
+      // Trier par solde (dette la plus élevée en premier pour pas en ordre)
+      notInOrder.sort((a, b) => a.balance - b.balance);
+      inOrder.sort((a, b) => b.balance - a.balance);
+      
+      // Mettre à jour les statistiques
+      document.getElementById('countInOrder').textContent = inOrder.length;
+      document.getElementById('countNotInOrder').textContent = notInOrder.length;
+      document.getElementById('countTotal').textContent = filteredStudents.length;
+      document.getElementById('inOrderCount').textContent = inOrder.length;
+      document.getElementById('notInOrderCount').textContent = notInOrder.length;
+      
+      // Afficher les listes
+      displayList('inOrderList', inOrder, true);
+      displayList('notInOrderList', notInOrder, false);
+    }
+    
+    // Afficher une liste d'élèves
+    function displayList(containerId, studentsList, isInOrder) {
+      const container = document.getElementById(containerId);
+      
+      if (studentsList.length === 0) {
+        container.innerHTML = '<div class="empty-message">Aucun élève dans cette catégorie</div>';
+        return;
+      }
+      
+      let html = `
+        <table class="student-table">
+          <thead>
+            <tr>
+              <th style="width: 40px;">N°</th>
+              <th style="width: 90px;">Matricule</th>
+              <th style="width: auto;">Nom complet</th>
+              <th style="width: 80px;">Classe</th>
+              <th style="width: 130px;">Montant payé</th>
+              <th style="width: 110px;">Solde</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      studentsList.forEach((item, index) => {
+        const student = item.student;
+        const balance = item.balance;
+        const displayPaid = item.filteredPaid !== undefined ? item.filteredPaid : item.totalPaid;
+        const balanceClass = balance >= 0 ? 'ok' : 'debt';
+        const balanceText = balance >= 0 ? `+${balance.toLocaleString()} CDF` : `${balance.toLocaleString()} CDF`;
+        
+        // Compter les paiements de cet élève
+        const allPayments = getAllPayments();
+        const studentPayments = allPayments.filter(p => p.studentId === student.id);
+        const studentPaymentCount = studentPayments.length;
+        
+        html += `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${student.matricule}</td>
+            <td>${student.nom} ${student.postnom} ${student.prenom}</td>
+            <td>${student.classe}</td>
+            <td style="font-weight: bold; color: #3498db;">${displayPaid.toLocaleString()} CDF <span style="font-size: 0.75rem; color: #7f8c8d;">(${studentPaymentCount} paiements)</span></td>
+            <td class="${balanceClass}">${balanceText}</td>
+          </tr>
+        `;
+      });
+      
+      html += `
+          </tbody>
+        </table>
+      `;
+      
+      container.innerHTML = html;
+    }
+    
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', () => {
+      loadClassFilter();
+      loadMonthFilter();
+      loadStudentLists();
+    });
+  </script>
+</body>
+</html>
