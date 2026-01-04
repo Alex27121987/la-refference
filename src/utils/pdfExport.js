@@ -1,12 +1,11 @@
 /**
  * Utilitaires d'export PDF
- * Utilise l'API print du navigateur pour générer des PDFs professionnels
+ * Génère un vrai fichier PDF téléchargeable (html2pdf.js)
  */
 
-export const generatePDF = (title, content, filename) => {
-  const printWindow = window.open('', '', 'width=1000,height=800');
-  
-  const htmlContent = `
+import html2pdf from 'html2pdf.js';
+
+const buildHtml = (title, content) => `
     <!DOCTYPE html>
     <html>
     <head>
@@ -189,16 +188,34 @@ export const generatePDF = (title, content, filename) => {
       </div>
     </body>
     </html>
-  `;
-  
-  printWindow.document.write(htmlContent);
-  printWindow.document.close();
-  
-  // Attendre que le contenu soit chargé avant de déclencher l'impression
-  printWindow.onload = () => {
-    printWindow.print();
+`;
+
+// Génère et télécharge un PDF directement (sans passer par la boîte d'impression)
+const downloadPDF = async (title, content, filename = 'document.pdf') => {
+  const htmlContent = buildHtml(title, content);
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.left = '-9999px';
+  container.innerHTML = htmlContent;
+  document.body.appendChild(container);
+
+  const options = {
+    margin: [0.3, 0.25, 0.5, 0.25],
+    filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
   };
+
+  try {
+    await html2pdf().set(options).from(container).save();
+  } finally {
+    document.body.removeChild(container);
+  }
 };
+
+// Ancienne API : génère et télécharge
+export const generatePDF = (title, content, filename) => downloadPDF(title, content, filename);
 
 // Export des étudiants d'une classe en PDF
 export const exportClassStudentsPDF = (className, sectionName, students) => {
@@ -232,7 +249,7 @@ export const exportClassStudentsPDF = (className, sectionName, students) => {
     </table>
   `;
   
-  generatePDF(`Classe: ${sectionName} - ${className}`, table, `${sectionName}_${className}_eleves.pdf`);
+   generatePDF(`Élèves - ${sectionName} ${className}`, table, `eleves_${sectionName}_${className}.pdf`);
 };
 
 // Export de la situation financière en PDF
