@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
-import { authenticate, requirePermission, AuthRequest } from '../middleware/auth.js';
+import { authenticate, requirePermission, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 const prisma = new PrismaClient();
