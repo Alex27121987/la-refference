@@ -15,15 +15,16 @@ model Role {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  username   String   @unique
-  password   String
-  fullName   String
-  role       Role     @relation(fields: [roleId], references: [id])
-  roleId     Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id            Int            @id @default(autoincrement())
+  username      String         @unique
+  password      String
+  fullName      String
+  role          Role           @relation(fields: [roleId], references: [id])
+  roleId        Int
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
 }
 
 model RefreshToken {
@@ -36,44 +37,44 @@ model RefreshToken {
 }
 
 model Class {
-  id        Int      @id @default(autoincrement())
-  name      String
-  section   String
-  year      String?
-  students  Student[]
-  courses   Course[]
+  id       Int       @id @default(autoincrement())
+  name     String
+  section  String
+  year     String?
+  students Student[]
+  courses  Course[]
 }
 
 model Student {
-  id          Int      @id @default(autoincrement())
-  matricule   String   @unique
-  nom         String
-  prenom      String?
-  naissance   String?
-  tel         String?
-  class       Class    @relation(fields: [classId], references: [id])
-  classId     Int
-  payments    Payment[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        Int       @id @default(autoincrement())
+  matricule String    @unique
+  nom       String
+  prenom    String?
+  naissance String?
+  tel       String?
+  class     Class     @relation(fields: [classId], references: [id])
+  classId   Int
+  payments  Payment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Payment {
-  id         Int      @id @default(autoincrement())
-  student    Student  @relation(fields: [studentId], references: [id])
-  studentId  Int
-  amount     Int
-  method     String?
-  note       String?
-  date       DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  student   Student  @relation(fields: [studentId], references: [id])
+  studentId Int
+  amount    Int
+  method    String?
+  note      String?
+  date      DateTime @default(now())
 }
 
 model Course {
-  id       Int    @id @default(autoincrement())
-  name     String
-  teacher  String?
-  class    Class  @relation(fields: [classId], references: [id])
-  classId  Int
+  id      Int     @id @default(autoincrement())
+  name    String
+  teacher String?
+  class   Class   @relation(fields: [classId], references: [id])
+  classId Int
 }
 
 model AuditLog {
