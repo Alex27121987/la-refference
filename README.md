@@ -1,11 +1,37 @@
-# React + Vite
+# LA RÉFÉRENCE — Application de gestion scolaire
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Application React + Vite pour gérer élèves, classes, paiements et rôles utilisateurs (admin, directeur, comptable, enseignant). Données actuellement côté navigateur (localStorage) ; prêt à évoluer avec un backend/API.
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Prérequis
+- Node 18+ (portable fournie dans `nodejs/` possible)
+- npm
+
+## Installation locale
+```
+npm install
+npm run dev
+```
+Ouvre ensuite l’URL affichée (par défaut http://localhost:5173).
+
+## Build production
+```
+npm run build
+```
+Le build statique est généré dans `dist/`.
+
+## Déploiement Netlify (gratuit)
+1. Créer un compte sur https://app.netlify.com/ (connexion GitHub recommandée).
+2. “Add new site” → “Import an existing project”.
+3. Sélectionner le repo GitHub `Alex27121987/la-refference`.
+4. Build command : `npm run build`
+5. Publish directory : `dist`
+6. Lancer le déploiement. Netlify génère une URL `https://<nom>.netlify.app`.
+7. Chaque `git push` sur `main` déclenchera un nouveau déploiement automatique.
+
+## Notes actuelles
+- Authentification et permissions gérées côté client (localStorage) pour la démo.
+- Pour un usage réel multi-utilisateurs, prévoir un backend (API + base de données + stockage fichiers) puis connecter le frontend à l’API.
 
 ## React Compiler
 
