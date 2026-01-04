@@ -66,7 +66,7 @@ function App() {
     <div className="app">
       <nav className="navbar">
         <div className="nav-container">
-          <h1 className="app-title">🏫 LA RÉFÉRENCE</h1>
+          <h1 className="app-title">🏫 LA DIFFERENCE</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flex: 1, justifyContent: 'space-between' }}>
             <ul className="nav-links">
               <li><button 
@@ -143,7 +143,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <p>&copy; 2026 LA RÉFÉRENCE - Système de Gestion Scolaire</p>
+        <p>&copy; 2026 LA DIFFERENCE - Système de Gestion Scolaire</p>
       </footer>
     </div>
   )

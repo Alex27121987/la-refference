@@ -1,4 +1,4 @@
-# LA RÉFÉRENCE — Application de gestion scolaire
+# LA DIFFERENCE — Application de gestion scolaire
 
 Application React + Vite pour gérer élèves, classes, paiements et rôles utilisateurs (admin, directeur, comptable, enseignant). Données actuellement côté navigateur (localStorage) ; prêt à évoluer avec un backend/API.
 

@@ -176,7 +176,7 @@ export const generatePDF = (title, content, filename) => {
     <body>
       <div class="header">
         <h1>📊 ${title}</h1>
-        <p>LA RÉFÉRENCE - Système de Gestion Scolaire</p>
+        <p>LA DIFFERENCE - Système de Gestion Scolaire</p>
         <p class="date">Généré le ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}</p>
       </div>
       
@@ -185,7 +185,7 @@ export const generatePDF = (title, content, filename) => {
       </div>
       
       <div class="footer">
-        <p>&copy; 2026 LA RÉFÉRENCE - Document confidentiel</p>
+        <p>&copy; 2026 LA DIFFERENCE - Document confidentiel</p>
       </div>
     </body>
     </html>

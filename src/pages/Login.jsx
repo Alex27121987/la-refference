@@ -47,7 +47,7 @@ export default function Login({ onLogin }) {
     <div className="login-page">
       <div className="login-container" style={{ maxWidth: '400px' }}>
         <div className="login-header">
-          <h1 style={{ fontSize: '28px', margin: '0 0 5px 0' }}>🏫 LA RÉFÉRENCE</h1>
+          <h1 style={{ fontSize: '28px', margin: '0 0 5px 0' }}>🏫 LA DIFFERENCE</h1>
           <p style={{ fontSize: '13px', opacity: 0.8 }}>Système de gestion scolaire</p>
         </div>
 
@@ -87,7 +87,7 @@ export default function Login({ onLogin }) {
         </form>
 
         <div className="login-footer">
-          <p style={{ fontSize: '11px', opacity: 0.6 }}>© 2026 LA RÉFÉRENCE</p>
+          <p style={{ fontSize: '11px', opacity: 0.6 }}>© 2026 LA DIFFERENCE</p>
         </div>
       </div>
     </div>
