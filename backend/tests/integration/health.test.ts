@@ -1,3 +1,6 @@
+process.env.NODE_ENV = 'test';
+process.env.DATABASE_URL = 'file:./dev.test.db';
+
 import request from 'supertest';
 import app from '../../src/index';
 
