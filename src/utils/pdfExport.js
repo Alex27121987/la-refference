@@ -1,11 +1,12 @@
 /**
  * Utilitaires d'export PDF
- * Génère un vrai fichier PDF téléchargeable (html2pdf.js)
+ * Utilise la fenêtre d'impression du navigateur (avec option "Enregistrer en PDF")
  */
 
-import html2pdf from 'html2pdf.js';
-
-const buildHtml = (title, content) => `
+export const generatePDF = (title, content, filename) => {
+  const printWindow = window.open('', '', 'width=1000,height=800');
+  
+  const htmlContent = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -188,34 +189,16 @@ const buildHtml = (title, content) => `
       </div>
     </body>
     </html>
-`;
-
-// Génère et télécharge un PDF directement (sans passer par la boîte d'impression)
-const downloadPDF = async (title, content, filename = 'document.pdf') => {
-  const htmlContent = buildHtml(title, content);
-  const container = document.createElement('div');
-  container.style.position = 'fixed';
-  container.style.left = '-9999px';
-  container.innerHTML = htmlContent;
-  document.body.appendChild(container);
-
-  const options = {
-    margin: [0.3, 0.25, 0.5, 0.25],
-    filename,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  `;
+  
+  printWindow.document.write(htmlContent);
+  printWindow.document.close();
+  
+  // Déclencher la boîte d'impression (permet d'enregistrer en PDF sur mobile/desktop)
+  printWindow.onload = () => {
+    printWindow.print();
   };
-
-  try {
-    await html2pdf().set(options).from(container).save();
-  } finally {
-    document.body.removeChild(container);
-  }
 };
-
-// Ancienne API : génère et télécharge
-export const generatePDF = (title, content, filename) => downloadPDF(title, content, filename);
 
 // Export des étudiants d'une classe en PDF
 export const exportClassStudentsPDF = (className, sectionName, students) => {
