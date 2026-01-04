@@ -9,6 +9,7 @@ required.forEach((key) => {
 });
 
 export const env = {
+  NODE_ENV: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '4000', 10),
   databaseUrl: process.env.DATABASE_URL || '',
   jwtSecret: process.env.JWT_SECRET || 'dev-secret',
