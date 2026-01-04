@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcryptjs';
-import * as jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
 
 const router = Router();
@@ -39,7 +39,20 @@ router.post('/login', async (req: Request, res: Response) => {
     }
 
     // Vérifier le mot de passe
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    let isPasswordValid = false;
+    try {
+      if (typeof user.password === 'string' && user.password.startsWith('$2')) {
+        // bcrypt hash
+        isPasswordValid = await bcrypt.compare(password, user.password);
+      } else {
+        // Plain-text stored (dev seed) — compare directly
+        isPasswordValid = password === user.password;
+      }
+    } catch (e) {
+      console.error('Erreur vérification mot de passe:', e);
+      return res.status(500).json({ error: 'Erreur serveur' });
+    }
+
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Identifiants invalides' });
     }

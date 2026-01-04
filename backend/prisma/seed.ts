@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -70,7 +70,10 @@ async function main() {
     const role = await prisma.role.upsert({
       where: { name: roleData.name },
       update: {},
-      create: roleData
+      create: {
+        name: roleData.name,
+        permissions: JSON.stringify(roleData.permissions)
+      }
     });
     console.log(`✅ Rôle créé: ${role.name}`);
   }
@@ -86,14 +89,13 @@ async function main() {
     throw new Error('Le rôle Admin n\'a pas été créé');
   }
 
-  const hashedPassword = await bcrypt.hash('admin123', 10);
-
+  // For local dev, store plain password (auth middleware will accept plain or bcrypt)
   const admin = await prisma.user.upsert({
     where: { username: 'admin' },
     update: {},
     create: {
       username: 'admin',
-      password: hashedPassword,
+      password: 'admin123',
       fullName: 'Administrateur Principal',
       roleId: adminRole.id
     }

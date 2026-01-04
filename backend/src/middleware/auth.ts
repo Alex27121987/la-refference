@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import * as jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { env } from '../config/env.js';
 
 export interface AuthRequest extends Request {
@@ -52,7 +52,24 @@ export const requirePermission = (permission: string) => {
 
       await prisma.$disconnect();
 
-      if (!user || !user.role.permissions.includes(permission)) {
+      if (!user) {
+        return res.status(403).json({ error: 'Permission refusée' });
+      }
+
+      // role.permissions may be stored as a JSON string (SQLite) or as an array (Postgres)
+      let perms: string[] = [];
+      try {
+        if (typeof user.role.permissions === 'string') {
+          perms = JSON.parse(user.role.permissions as unknown as string) as string[];
+        } else {
+          perms = user.role.permissions as unknown as string[];
+        }
+      } catch (e) {
+        console.error('Erreur parsing permissions:', e);
+        perms = [];
+      }
+
+      if (!perms.includes(permission)) {
         return res.status(403).json({ error: 'Permission refusée' });
       }
 
