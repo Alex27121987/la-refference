@@ -48,6 +48,36 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.pill .icon {
+  font-size: 1em;
+}
+
+.pill .text {
+  display: inline;
+}
+
+/* Sur mobile, afficher seulement l'icône */
+@media (max-width: 768px) {
+  .pill {
+    padding: 6px;
+    font-size: 1.1rem;
+    min-width: 36px;
+    justify-content: center;
+  }
+  
+  .pill .text {
+    display: none;
+  }
+  
+  .pill .icon {
+    font-size: 1.2em;
+  }
 }
 
 .pill.primary { background: #1e88e5; border-color: #1e88e5; color: #fff; }

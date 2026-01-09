@@ -13,7 +13,8 @@ module.exports = async () => {
   });
   // Run seed against the test DB
   try {
-    execSync('node -e "require(\'ts-node/register\'); require(\'./prisma/seed\')"', {
+    // Use ts-node in ESM mode to run the TypeScript seed when the package uses "type": "module"
+    execSync('npx ts-node --esm prisma/seed.ts', {
       stdio: 'inherit',
       cwd: root,
       env: { ...process.env, DATABASE_URL: dbUrl }

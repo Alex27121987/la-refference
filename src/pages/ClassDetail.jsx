@@ -242,9 +242,18 @@ export default function ClassDetail({ sectionName, className, onBack, onOpenSitu
           <button className="pill" onClick={onOpenSituation}>📄 Situation financière</button>
           {canAddStudents && (
             <>
-              <button className="pill">💸 Paiement rapide</button>
-              <button className="pill cancel" onClick={handleCancel}>✖ Annuler</button>
-              <button className="pill primary" onClick={handleSave}>💾 Enregistrer</button>
+              <button className="pill" title="Paiement rapide">
+                <span className="icon">💸</span>
+                <span className="text">Paiement</span>
+              </button>
+              <button className="pill cancel" onClick={handleCancel} title="Annuler">
+                <span className="icon">✖</span>
+                <span className="text">Annuler</span>
+              </button>
+              <button className="pill primary" onClick={handleSave} title="Enregistrer">
+                <span className="icon">💾</span>
+                <span className="text">Enregistrer</span>
+              </button>
             </>
           )}
         </div>

@@ -18,6 +18,7 @@ function App() {
     const saved = typeof window !== 'undefined' ? localStorage.getItem('lr_selected_class') : null
     return saved ? JSON.parse(saved) : null
   })
+  const [menuOpen, setMenuOpen] = useState(false)
 
   const handleLogin = (userData) => {
     setUser(userData)
@@ -66,46 +67,85 @@ function App() {
     <div className="app">
       <nav className="navbar">
         <div className="nav-container">
+          <button 
+            className="hamburger-btn"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
           <h1 className="app-title">🏫 LA DIFFERENCE</h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', flex: 1, justifyContent: 'space-between' }}>
-            <ul className="nav-links">
-              <li><button 
-                className={currentPage === 'dashboard' ? 'active' : ''} 
-                onClick={() => { setCurrentPage('dashboard'); setSelectedClass(null); }}
-              >
-                🏠 Accueil
-              </button></li>
-              {hasPermission(user, PERMISSIONS.ADD_PAYMENTS) && (
-                <li><button 
-                  className={currentPage === 'payment' ? 'active' : ''} 
-                  onClick={() => setCurrentPage('payment')}
-                >
-                  💰 Saisie Paiement
-                </button></li>
-              )}
-              {hasPermission(user, PERMISSIONS.MANAGE_USERS) && (
-                <li><button 
-                  className={currentPage === 'users' ? 'active' : ''} 
-                  onClick={() => setCurrentPage('users')}
-                >
-                  👥 Utilisateurs
-                </button></li>
-              )}
-            </ul>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-              <span style={{ color: '#ecf0f1', fontSize: '14px' }}>
-                👤 {user?.fullName || user?.username} <span style={{ opacity: 0.7 }}>({user?.role})</span>
-              </span>
-              <button 
-                className="logout-btn"
-                onClick={handleLogout}
-              >
-                🚪 Déconnexion
-              </button>
-            </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span className="user-info">
+              👤 {user?.fullName || user?.username}
+            </span>
+            <button 
+              className="logout-btn"
+              onClick={handleLogout}
+            >
+              🚪
+            </button>
           </div>
         </div>
       </nav>
+
+      {/* Menu latéral hamburger */}
+      <div className={`sidebar-menu ${menuOpen ? 'open' : ''}`}>
+        <div className="sidebar-overlay" onClick={() => setMenuOpen(false)}></div>
+        <div className="sidebar-content">
+          <div className="sidebar-header">
+            <h2>📋 Menu</h2>
+            <button className="close-btn" onClick={() => setMenuOpen(false)}>✕</button>
+          </div>
+          <ul className="sidebar-links">
+            <li>
+              <button 
+                className={currentPage === 'dashboard' ? 'active' : ''} 
+                onClick={() => { 
+                  setCurrentPage('dashboard'); 
+                  setSelectedClass(null); 
+                  setMenuOpen(false);
+                }}
+              >
+                🏠 Accueil
+              </button>
+            </li>
+            {hasPermission(user, PERMISSIONS.ADD_PAYMENTS) && (
+              <li>
+                <button 
+                  className={currentPage === 'payment' ? 'active' : ''} 
+                  onClick={() => { 
+                    setCurrentPage('payment'); 
+                    setMenuOpen(false);
+                  }}
+                >
+                  💰 Saisie Paiement
+                </button>
+              </li>
+            )}
+            {hasPermission(user, PERMISSIONS.MANAGE_USERS) && (
+              <li>
+                <button 
+                  className={currentPage === 'users' ? 'active' : ''} 
+                  onClick={() => { 
+                    setCurrentPage('users'); 
+                    setMenuOpen(false);
+                  }}
+                >
+                  👥 Utilisateurs
+                </button>
+              </li>
+            )}
+          </ul>
+          <div className="sidebar-footer">
+            <p style={{ fontSize: '12px', opacity: 0.7 }}>
+              Rôle: <strong>{user?.role}</strong>
+            </p>
+          </div>
+        </div>
+      </div>
 
       <main className="main-content">
         {currentPage === 'dashboard' && !selectedClass && (

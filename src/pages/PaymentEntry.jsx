@@ -1223,14 +1223,35 @@ export default function PaymentEntry({ onOpenSituation, onSelectClass, user }) {
       <div className="header-bar">
         <div className="title">💰 Paiement rapide</div>
         <div className="actions">
-          <button onClick={() => handleClickAction('Rechercher')} className="pill purple">🔍 Rechercher</button>
-          <button onClick={() => handleClickAction('Situation')} className="pill yellow">📊 Situation</button>
-          <button onClick={() => handleClickAction('Situation Financière')} className="pill pink">💰 Situation Financière</button>
-          <button onClick={() => handleClickAction('Actualiser')} className="pill green">🔄 Actualiser</button>
-          <button onClick={() => handleClickAction('Historique')} className="pill orange">📜 Historique</button>
+          <button onClick={() => handleClickAction('Rechercher')} className="pill purple" title="Rechercher">
+            <span className="icon">🔍</span>
+            <span className="text">Rechercher</span>
+          </button>
+          <button onClick={() => handleClickAction('Situation')} className="pill yellow" title="Situation">
+            <span className="icon">📊</span>
+            <span className="text">Situation</span>
+          </button>
+          <button onClick={() => handleClickAction('Situation Financière')} className="pill pink" title="Situation Financière">
+            <span className="icon">💰</span>
+            <span className="text">Sit. Financière</span>
+          </button>
+          <button onClick={() => handleClickAction('Actualiser')} className="pill green" title="Actualiser">
+            <span className="icon">🔄</span>
+            <span className="text">Actualiser</span>
+          </button>
+          <button onClick={() => handleClickAction('Historique')} className="pill orange" title="Historique">
+            <span className="icon">📜</span>
+            <span className="text">Historique</span>
+          </button>
           <span className="divider" />
-          <button onClick={() => handleClickAction('Rapport par date')} className="pill teal">📅 Rapport par date</button>
-          <button onClick={() => handleClickAction('En ordre / Pas en ordre')} className="pill red">📋 En ordre / Pas en ordre</button>
+          <button onClick={() => handleClickAction('Rapport par date')} className="pill teal" title="Rapport par date">
+            <span className="icon">📅</span>
+            <span className="text">Rapport date</span>
+          </button>
+          <button onClick={() => handleClickAction('En ordre / Pas en ordre')} className="pill red" title="En ordre / Pas en ordre">
+            <span className="icon">📋</span>
+            <span className="text">En ordre</span>
+          </button>
         </div>
       </div>
 

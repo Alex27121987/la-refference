@@ -89,25 +89,28 @@ async function main() {
     throw new Error('Le rôle Admin n\'a pas été créé');
   }
 
-  // For local dev, store plain password (auth middleware will accept plain or bcrypt)
+  // Create admin user, password comes from ADMIN_PASSWORD env var (fallback in dev)
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+  const hashed = ADMIN_PASSWORD.startsWith('$2') ? ADMIN_PASSWORD : ADMIN_PASSWORD; // keep as-is for dev; hashing can be added if needed
+
   const admin = await prisma.user.upsert({
     where: { username: 'admin' },
     update: {},
     create: {
       username: 'admin',
-      password: 'admin123',
+      // store as plain in dev only; in production use a hashed password
+      password: hashed,
       fullName: 'Administrateur Principal',
       roleId: adminRole.id
     }
   });
 
   console.log(`✅ Utilisateur admin créé: ${admin.username}`);
-  console.log('');
   console.log('🎉 Seeding terminé avec succès !');
   console.log('');
   console.log('📌 Informations de connexion:');
   console.log('   Username: admin');
-  console.log('   Password: admin123');
+  console.log('   Password: (from ADMIN_PASSWORD env var)');
 }
 
 main()

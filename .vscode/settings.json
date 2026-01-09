@@ -1,0 +1,30 @@
+{
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": false,
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/dist/**": true,
+    "**/.vscode/**": true,
+    "**/coverage/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/dist": true
+  },
+  "javascript.updateImportsOnFileMove.enabled": "never",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": false
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": false
+  },
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact"
+  ]
+}
