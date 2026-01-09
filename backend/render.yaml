@@ -1,0 +1,4 @@
+# Build configuration for Render.com
+
+buildCommand: npm install && npx prisma generate && npm run build
+startCommand: npm run start
