@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { authenticate, requirePermission, AuthRequest } from '../middleware/auth.js';
@@ -7,7 +7,7 @@ const router = Router();
 const prisma = new PrismaClient();
 
 // GET /users - Lister tous les utilisateurs (Admin seulement)
-router.get('/', authenticate, requirePermission('manage_users'), async (req: AuthRequest, res) => {
+router.get('/', authenticate, requirePermission('manage_users'), async (req: Request, res: Response) => {
   try {
     const { skip = 0, take = 50 } = req.query;
 
@@ -30,7 +30,7 @@ router.get('/', authenticate, requirePermission('manage_users'), async (req: Aut
 });
 
 // GET /users/:id - Récupérer un utilisateur par ID
-router.get('/:id', authenticate, requirePermission('manage_users'), async (req: AuthRequest, res) => {
+router.get('/:id', authenticate, requirePermission('manage_users'), async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -52,7 +52,7 @@ router.get('/:id', authenticate, requirePermission('manage_users'), async (req: 
 });
 
 // POST /users - Créer un nouvel utilisateur (Admin seulement)
-router.post('/', authenticate, requirePermission('manage_users'), async (req: AuthRequest, res) => {
+router.post('/', authenticate, requirePermission('manage_users'), async (req: AuthRequest, res: Response) => {
   try {
     const { username, password, fullName, roleId } = req.body;
 
@@ -109,7 +109,7 @@ router.post('/', authenticate, requirePermission('manage_users'), async (req: Au
 });
 
 // PUT /users/:id - Modifier un utilisateur (Admin seulement)
-router.put('/:id', authenticate, requirePermission('manage_users'), async (req: AuthRequest, res) => {
+router.put('/:id', authenticate, requirePermission('manage_users'), async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const { fullName, roleId, password } = req.body;
@@ -149,7 +149,7 @@ router.put('/:id', authenticate, requirePermission('manage_users'), async (req: 
 });
 
 // DELETE /users/:id - Supprimer un utilisateur (Admin seulement)
-router.delete('/:id', authenticate, requirePermission('delete_records'), async (req: AuthRequest, res) => {
+router.delete('/:id', authenticate, requirePermission('delete_records'), async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
 
