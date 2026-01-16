@@ -20,7 +20,7 @@ router.get('/', authenticate, requirePermission('manage_users'), async (req: Req
     const total = await prisma.user.count();
 
     // Retourner les utilisateurs sans les mots de passe
-    const safeUsers = users.map(({ password, ...rest }) => rest);
+    const safeUsers = users.map(({ password, ...rest }: { password: string; [key: string]: any }) => rest);
 
     res.json({ users: safeUsers, total, page: skip, pageSize: take });
   } catch (error) {

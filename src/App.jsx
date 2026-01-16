@@ -1,192 +1,192 @@
-import { useEffect, useState } from 'react'
-import './App.css'
-import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
-import PaymentEntry from './pages/PaymentEntry'
-import FinancialSituation from './pages/FinancialSituation'
-import ClassDetail from './pages/ClassDetail'
-import UserManagement from './pages/UserManagement'
-import { hasPermission, PERMISSIONS, canAccessClass } from './utils/userManagement'
+import { useState } from "react";
+import { Routes, Route, Link } from "react-router-dom";
+import "./App.css";
 
-function App() {
-  const [user, setUser] = useState(() => {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('lr_user') : null
-    return saved ? JSON.parse(saved) : null
-  })
-  const [currentPage, setCurrentPage] = useState('dashboard')
-  const [selectedClass, setSelectedClass] = useState(() => {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('lr_selected_class') : null
-    return saved ? JSON.parse(saved) : null
-  })
-  const [menuOpen, setMenuOpen] = useState(false)
+import Login from "./pages/Login.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import Classe from "./pages/Classe.jsx";
+import PaymentEntry from "./pages/PaymentEntry.jsx";
+import Paiement from "./pages/Paiement.jsx";
+import FinancialSituation from "./pages/FinancialSituation.jsx";
+import UserManagement from "./pages/UserManagement.jsx";
 
-  const handleLogin = (userData) => {
-    setUser(userData)
-    setCurrentPage('dashboard')
-  }
+import { handleGeneratePdf } from "./utils/pdfExport";
+import { getRoleLabel } from "./utils/userManagement";
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('lr_user', JSON.stringify(user))
-    } else {
-      localStorage.removeItem('lr_user')
-    }
-  }, [user])
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState("");
 
-  useEffect(() => {
-    if (selectedClass) {
-      localStorage.setItem('lr_selected_class', JSON.stringify(selectedClass))
-    } else {
-      localStorage.removeItem('lr_selected_class')
-    }
-  }, [selectedClass])
+  /* =======================
+     Actions globales
+  ======================= */
+  const handleLogout = () => setUser(null);
 
-  const handleLogout = () => {
-    setUser(null)
-    setCurrentPage('dashboard')
-    setSelectedClass(null)
-    localStorage.removeItem('lr_selected_class')
-  }
-
-  const handleSelectClass = (sectionName, className) => {
-    // Vérifier si l'utilisateur a accès à cette classe
-    if (!canAccessClass(user, sectionName, className)) {
-      alert('❌ Vous n\'avez pas accès à cette classe');
+  const handleExportPDF = () => {
+    if (typeof window === "undefined") {
+      alert("PDF indisponible dans ce contexte.");
       return;
     }
-    setSelectedClass({ sectionName, className })
-    setCurrentPage('class-detail')
+
+    const ctx = window.PDF_CONTEXT;
+
+    if (!ctx || !ctx.type) {
+      alert("Aucun document PDF disponible pour cette page.");
+      return;
+    }
+
+    if (!ctx.data || Object.keys(ctx.data).length === 0) {
+      alert("Les données nécessaires au PDF sont manquantes.");
+      return;
+    }
+
+    try {
+      handleGeneratePdf(ctx);
+    } catch (e) {
+      console.error("Erreur génération PDF :", e);
+      alert("Erreur lors de la génération du PDF.");
+    }
+  };
+
+  const handleSync = async () => {
+    setSyncing(true);
+    setSyncMessage("🔄 Synchronisation en cours...");
+    await new Promise((r) => setTimeout(r, 1000));
+    setSyncMessage("✓ Données actualisées");
+    setTimeout(() => setSyncMessage(""), 2000);
+    setSyncing(false);
+  };
+
+  /* =======================
+     Auth
+  ======================= */
+  if (!user) {
+    return <Login onLogin={setUser} />;
   }
 
-  // Si pas connecté, afficher la page de login
-  if (!user) {
-    return <Login onLogin={handleLogin} />
-  }
+  const roleLabel = getRoleLabel(user.role);
 
   return (
-    <div className="app">
-      <nav className="navbar">
-        <div className="nav-container">
-          <button 
-            className="hamburger-btn"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-          <h1 className="app-title">🏫 LA DIFFERENCE</h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span className="user-info">
-              👤 {user?.fullName || user?.username}
-            </span>
-            <button 
-              className="logout-btn"
-              onClick={handleLogout}
-            >
-              🚪
-            </button>
-          </div>
-        </div>
-      </nav>
+    <>
+      {/* ===== Barre supérieure ===== */}
+      <div style={topBar}>
+        <button onClick={() => setMenuOpen((v) => !v)} style={burgerBtn}>
+          ☰
+        </button>
 
-      {/* Menu latéral hamburger */}
-      <div className={`sidebar-menu ${menuOpen ? 'open' : ''}`}>
-        <div className="sidebar-overlay" onClick={() => setMenuOpen(false)}></div>
-        <div className="sidebar-content">
-          <div className="sidebar-header">
-            <h2>📋 Menu</h2>
-            <button className="close-btn" onClick={() => setMenuOpen(false)}>✕</button>
-          </div>
-          <ul className="sidebar-links">
-            <li>
-              <button 
-                className={currentPage === 'dashboard' ? 'active' : ''} 
-                onClick={() => { 
-                  setCurrentPage('dashboard'); 
-                  setSelectedClass(null); 
-                  setMenuOpen(false);
-                }}
-              >
-                🏠 Accueil
-              </button>
-            </li>
-            {hasPermission(user, PERMISSIONS.ADD_PAYMENTS) && (
-              <li>
-                <button 
-                  className={currentPage === 'payment' ? 'active' : ''} 
-                  onClick={() => { 
-                    setCurrentPage('payment'); 
-                    setMenuOpen(false);
-                  }}
-                >
-                  💰 Saisie Paiement
-                </button>
-              </li>
-            )}
-            {hasPermission(user, PERMISSIONS.MANAGE_USERS) && (
-              <li>
-                <button 
-                  className={currentPage === 'users' ? 'active' : ''} 
-                  onClick={() => { 
-                    setCurrentPage('users'); 
-                    setMenuOpen(false);
-                  }}
-                >
-                  👥 Utilisateurs
-                </button>
-              </li>
-            )}
-          </ul>
-          <div className="sidebar-footer">
-            <p style={{ fontSize: '12px', opacity: 0.7 }}>
-              Rôle: <strong>{user?.role}</strong>
-            </p>
-          </div>
+        {/* Menu latéral */}
+        <div style={{ ...sideMenu, left: menuOpen ? 0 : -220 }}>
+          <Link to="/" style={menuLink} onClick={() => setMenuOpen(false)}>Dashboard</Link>
+          <Link to="/paiements" style={menuLink} onClick={() => setMenuOpen(false)}>Paiements</Link>
+          <Link to="/situation" style={menuLink} onClick={() => setMenuOpen(false)}>Situation financière</Link>
+          <Link to="/utilisateurs" style={menuLink} onClick={() => setMenuOpen(false)}>Utilisateurs</Link>
         </div>
+
+        {menuOpen && <div style={overlay} onClick={() => setMenuOpen(false)} />}
+
+        <div style={{ color: "#fff", fontSize: 15 }}>
+          Bienvenue, {user.username}
+          {roleLabel && <span style={{ opacity: 0.8, marginLeft: 8 }}>{roleLabel}</span>}
+        </div>
+
+        <div style={{ marginLeft: "auto", display: "flex", gap: 12 }}>
+          <button onClick={handleExportPDF} style={iconBtn} title="Exporter PDF">
+            📄
+          </button>
+          <button onClick={handleSync} disabled={syncing} style={iconBtn}>
+            🔄
+          </button>
+          <button onClick={handleLogout} style={{ ...iconBtn, color: "#e74c3c" }}>
+            🚪
+          </button>
+        </div>
+
+        {syncMessage && <span style={syncMsg}>{syncMessage}</span>}
       </div>
 
-      <main className="main-content">
-        {currentPage === 'dashboard' && !selectedClass && (
-          <Dashboard user={user} onSelectClass={handleSelectClass} />
-        )}
-        {currentPage === 'class-detail' && selectedClass && (
-          <ClassDetail
-            sectionName={selectedClass.sectionName}
-            className={selectedClass.className}
-            onBack={() => { setSelectedClass(null); setCurrentPage('dashboard'); }}
-            onOpenSituation={() => setCurrentPage('situation')}
-            user={user}
-          />
-        )}
-        {currentPage === 'payment' && (
-          <PaymentEntry 
-            onOpenSituation={() => setCurrentPage('situation')}
-            onSelectClass={(section, classe) => {
-              setSelectedClass({ sectionName: section, className: classe });
-              setCurrentPage('situation');
-            }}
-            user={user}
-          />
-        )}
-        {currentPage === 'situation' && (
-          <FinancialSituation
-            selectedClass={selectedClass}
-            onBack={() => setCurrentPage(selectedClass ? 'class-detail' : 'dashboard')}
-            user={user}
-          />
-        )}
-        {currentPage === 'users' && hasPermission(user, PERMISSIONS.MANAGE_USERS) && (
-          <UserManagement />
-        )}
-      </main>
-
-      <footer className="app-footer">
-        <p>&copy; 2026 LA DIFFERENCE - Système de Gestion Scolaire</p>
-      </footer>
-    </div>
-  )
+      {/* ===== Routes ===== */}
+      <Routes>
+        <Route path="/" element={<Dashboard user={user} />} />
+        <Route path="/paiements" element={<PaymentEntry />} />
+        <Route path="/paiement" element={<Paiement />} />
+        <Route path="/situation" element={<FinancialSituation />} />
+        <Route path="/utilisateurs" element={<UserManagement />} />
+        <Route path="/classe/:classe" element={<Classe />} />
+      </Routes>
+    </>
+  );
 }
 
-export default App
+/* =======================
+   STYLES
+======================= */
+
+const topBar = {
+  display: "flex",
+  alignItems: "center",
+  padding: 8,
+  background: "#222",
+  position: "relative",
+  color: "#fff",
+};
+
+const burgerBtn = {
+  background: "none",
+  border: "none",
+  color: "#fff",
+  fontSize: 28,
+  cursor: "pointer",
+  marginRight: 12,
+};
+
+const sideMenu = {
+  position: "fixed",
+  top: 0,
+  width: 200,
+  height: "100vh",
+  background: "#222",
+  paddingTop: 48,
+  transition: "left 0.2s",
+  zIndex: 20,
+};
+
+const menuLink = {
+  color: "#fff",
+  textDecoration: "none",
+  fontWeight: 600,
+  padding: 16,
+  display: "block",
+};
+
+const overlay = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100vw",
+  height: "100vh",
+  background: "#0007",
+  zIndex: 15,
+};
+
+const iconBtn = {
+  background: "none",
+  border: "none",
+  color: "#fff",
+  fontSize: 22,
+  cursor: "pointer",
+};
+
+const syncMsg = {
+  position: "absolute",
+  right: 16,
+  top: 48,
+  background: "#fff3cd",
+  color: "#856404",
+  padding: "6px 16px",
+  borderRadius: 6,
+  fontSize: 14,
+  fontWeight: 500,
+  zIndex: 30,
+};

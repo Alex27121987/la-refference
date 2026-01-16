@@ -6,7 +6,7 @@ const router = Router();
 const prisma = new PrismaClient();
 
 // GET /payments - Lister tous les paiements
-router.get('/', authenticate, async (req: AuthRequest, res) => {
+router.get('/', authenticate, async (req: AuthRequest<any, any, any, any>, res: import('express').Response) => {
   try {
     const { studentId, skip = 0, take = 50, startDate, endDate } = req.query;
 
@@ -42,7 +42,7 @@ router.get('/', authenticate, async (req: AuthRequest, res) => {
 });
 
 // GET /payments/:id - Récupérer un paiement par ID
-router.get('/:id', authenticate, async (req: AuthRequest, res) => {
+router.get('/:id', authenticate, async (req: AuthRequest<any, any, any, any>, res: import('express').Response) => {
   try {
     const { id } = req.params;
     const payment = await prisma.payment.findUnique({
@@ -62,7 +62,7 @@ router.get('/:id', authenticate, async (req: AuthRequest, res) => {
 });
 
 // GET /payments/student/:studentId - Lister les paiements d'un étudiant
-router.get('/student/:studentId', authenticate, async (req: AuthRequest, res) => {
+router.get('/student/:studentId', authenticate, async (req: AuthRequest<any, any, any, any>, res: import('express').Response) => {
   try {
     const { studentId } = req.params;
 
@@ -72,7 +72,7 @@ router.get('/student/:studentId', authenticate, async (req: AuthRequest, res) =>
       orderBy: { date: 'desc' }
     });
 
-    const totalAmount = payments.reduce((sum, p) => sum + p.amount, 0);
+    const totalAmount = payments.reduce((sum: number, p: { amount: number }) => sum + p.amount, 0);
 
     res.json({ payments, totalAmount });
   } catch (error) {
@@ -86,7 +86,7 @@ router.post(
   '/',
   authenticate,
   requirePermission('manage_payments'),
-  async (req: AuthRequest, res) => {
+  async (req: AuthRequest<any, any, any, any>, res: import('express').Response) => {
     try {
       const { studentId, amount, method, note, date } = req.body;
 
@@ -127,7 +127,7 @@ router.put(
   '/:id',
   authenticate,
   requirePermission('manage_payments'),
-  async (req: AuthRequest, res) => {
+  async (req: AuthRequest<any, any, any, any>, res: import('express').Response) => {
     try {
       const { id } = req.params;
       const { amount, method, note, date } = req.body;
@@ -165,7 +165,7 @@ router.delete(
   '/:id',
   authenticate,
   requirePermission('delete_records'),
-  async (req: AuthRequest, res) => {
+  async (req: AuthRequest<any, any, any, any>, res: import('express').Response) => {
     try {
       const { id } = req.params;
 

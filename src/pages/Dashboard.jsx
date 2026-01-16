@@ -1,263 +1,165 @@
-import { useEffect, useState } from 'react';
-import './Dashboard.css';
-import { exportDashboardPDF } from '../utils/pdfExport';
-import { getAccessibleClasses, getRoleLabel, ROLES } from '../utils/userManagement';
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// Normalise un nom pour matcher les clés de storage
-const normalize = (str) => (str || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-
-// Lit les effectifs réels depuis localStorage (clés lr_students_Section_Classe)
-const getSectionCounts = () => {
-  const counts = { maternelle: 0, primaire: 0, secondaire: 0 };
-
-  if (typeof window === 'undefined') return counts;
-
-  Object.keys(localStorage)
-    .filter((k) => k.startsWith('lr_students_'))
-    .forEach((key) => {
-      const parts = key.split('_');
-      const sectionRaw = parts[2] || '';
-      const section = normalize(sectionRaw);
-      let bucket = null;
-      if (section.includes('maternelle')) bucket = 'maternelle';
-      else if (section.includes('primaire')) bucket = 'primaire';
-      else if (section.includes('secondaire')) bucket = 'secondaire';
-      if (!bucket) return;
-      try {
-        const arr = JSON.parse(localStorage.getItem(key) || '[]');
-        if (Array.isArray(arr)) counts[bucket] += arr.length;
-      } catch (e) {
-        // console.warn('Impossible de lire', key, e);
-      }
-    });
-
-  return counts;
+// Icônes SVG linéaires sobres
+const SectionIcons = {
+  maternelle: (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style={{marginRight:8}} aria-hidden="true">
+      <circle cx="14" cy="14" r="12" stroke="#8A8A8A" strokeWidth="2"/>
+      <circle cx="14" cy="13" r="5" stroke="#8A8A8A" strokeWidth="2"/>
+      <rect x="9" y="18" width="10" height="4" rx="2" stroke="#8A8A8A" strokeWidth="2"/>
+    </svg>
+  ),
+  primaire: (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style={{marginRight:8}} aria-hidden="true">
+      <rect x="4" y="7" width="20" height="14" rx="3" stroke="#8A8A8A" strokeWidth="2"/>
+      <rect x="8" y="11" width="12" height="6" rx="1.5" stroke="#8A8A8A" strokeWidth="2"/>
+    </svg>
+  ),
+  secondaire: (
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style={{marginRight:8}} aria-hidden="true">
+      <rect x="6" y="6" width="16" height="16" rx="4" stroke="#8A8A8A" strokeWidth="2"/>
+      <path d="M10 18V10h8v8" stroke="#8A8A8A" strokeWidth="2"/>
+    </svg>
+  ),
 };
 
-export default function Dashboard({ user, onSelectClass }) {
-  const safeUser = user || {};
-  const username = safeUser.username || 'Utilisateur';
-  const roleLabel = getRoleLabel(safeUser.role || '');
+const SECTIONS = [
+  { id: 'maternelle', name: 'Maternelle', icon: SectionIcons.maternelle, classes: ['Mat1', 'Mat2', 'Mat3'] },
+  { id: 'primaire', name: 'Primaire', icon: SectionIcons.primaire, classes: ['P1', 'P2', 'P3', 'P4', 'P5', 'P6'] },
+  { id: 'secondaire', name: 'Secondaire', icon: SectionIcons.secondaire, classes: ['7EB', '8EB', '1S', '2S', '3S', '4S'] },
+];
 
-  const [counts, setCounts] = useState(getSectionCounts());
-  const [syncing, setSyncing] = useState(false);
-  const [syncMessage, setSyncMessage] = useState('');
+export default function Dashboard() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [selected, setSelected] = useState({ section: null, classe: null });
+  const firstBtnRef = useRef(null);
+  const navigate = useNavigate();
+  useEffect(() => { if (firstBtnRef.current) firstBtnRef.current.focus(); }, []);
 
-  // Rafraîchir en temps réel (storage externe + rafraîchissement périodique pour le même onglet)
+  // Handler navigation vers la page Classe
+  const handleClassClick = (section, classe) => {
+    setSelected({ section, classe });
+    navigate(`/classe/${classe}`);
+  };
+
   useEffect(() => {
-    const refresh = () => setCounts(getSectionCounts());
-
-    // Événement storage (autres onglets)
-    const onStorage = (e) => {
-      if (!e || !e.key) return;
-      if (e.key.startsWith('lr_students_')) refresh();
-    };
-
-    // Rafraîchissement périodique pour capter les setItem du même onglet
-    const interval = setInterval(refresh, 5000);
-
-    // Lorsqu'on revient sur l'onglet
-    const onVisibility = () => {
-      if (document.visibilityState === 'visible') refresh();
-    };
-
-    window.addEventListener('storage', onStorage);
-    document.addEventListener('visibilitychange', onVisibility);
-
-    refresh();
-
-    return () => {
-      window.removeEventListener('storage', onStorage);
-      document.removeEventListener('visibilitychange', onVisibility);
-      clearInterval(interval);
-    };
+    if (typeof window !== "undefined") {
+      window.PDF_CONTEXT = {
+        type: "rapport-general",
+        data: {
+          sections: SECTIONS
+        }
+      };
+      return () => {
+        delete window.PDF_CONTEXT;
+      };
+    }
   }, []);
 
-  const sections = [
-    {
-      id: 'maternelle',
-      name: 'Maternelle',
-      icon: '👶',
-      color: '#e74c3c',
-      classes: ['1ère Mat', '2ème Mat', '3ème Mat'],
-      students: counts.maternelle,
-      teachers: 0,
-    },
-    {
-      id: 'primaire',
-      name: 'Primaire',
-      icon: '📚',
-      color: '#27ae60',
-      classes: ['1ère', '2ème', '3ème', '4ème', '5ème', '6ème'],
-      students: counts.primaire,
-      teachers: 0,
-    },
-    {
-      id: 'secondaire',
-      name: 'Secondaire',
-      icon: '🎓',
-      color: '#3498db',
-      classes: ['7EB', '8EB', '1', '2', '3', '4'],
-      students: counts.secondaire,
-      teachers: 0,
-    }
-  ];
-
-  const handleSelectClass = (sectionName, className) => {
-    if (onSelectClass) {
-      onSelectClass(sectionName, className);
-    }
-  };
-
-  const handleSync = async () => {
-    setSyncing(true);
-    setSyncMessage('🔄 Synchronisation en cours...');
-    
-    try {
-      // Recharger les données depuis localStorage
-      // TODO: Quand l'API sera disponible, ajouter ici:
-      // 1. Envoyer les données locales vers le serveur (localStorage -> API)
-      // 2. Récupérer les données du serveur (API -> localStorage)
-      // 3. Fusionner les données (résolution de conflits)
-      
-      // Pour l'instant, on simule la synchronisation (1s) et on recharge les données locales
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Recharger les compteurs depuis localStorage
-      const updatedCounts = getSectionCounts();
-      setCounts(updatedCounts);
-      
-      setSyncMessage('✓ Données actualisées');
-      setTimeout(() => setSyncMessage(''), 2000);
-    } catch (error) {
-      console.error('Erreur de synchronisation:', error);
-      setSyncMessage('✗ Échec de la synchronisation');
-      setTimeout(() => setSyncMessage(''), 3000);
-    } finally {
-      setSyncing(false);
-    }
-  };
-
-  const totalStudents = sections.reduce((sum, s) => sum + s.students, 0);
-  const totalTeachers = sections.reduce((sum, s) => sum + s.teachers, 0);
-
   return (
-    <div className="dashboard-page">
-      <div className="dashboard-header">
-        <div>
-          <h2>Bienvenue, {username} ! 👋</h2>
-          <p>Rôle: {roleLabel}</p>
+    <div style={{ minHeight: '100vh', background: '#d1d5db' }}>
+      {/* Menu hamburger */}
+      <button
+        aria-label="Ouvrir le menu"
+        onClick={() => setMenuOpen((v) => !v)}
+        style={{ position: 'absolute', top: 16, left: 16, background: 'none', border: 'none', color: '#222', fontSize: 32, cursor: 'pointer', zIndex: 10 }}
+      >
+        <span style={{fontSize: 32, lineHeight: 1}}>☰</span>
+      </button>
+      {menuOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: 220, height: '100vh', background: '#222', color: '#fff', zIndex: 20, padding: 32 }}>
+          <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 24 }}>Menu</div>
+          <div style={{ opacity: 0.7 }}>À compléter plus tard…</div>
         </div>
-        
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon">👥</div>
-            <div>
-              <div className="stat-value">{totalStudents}</div>
-              <div className="stat-label">Élèves</div>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">👨‍🏫</div>
-            <div>
-              <div className="stat-value">{totalTeachers}</div>
-              <div className="stat-label">Enseignants</div>
-            </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-icon">🏫</div>
-            <div>
-              <div className="stat-value">{sections.length}</div>
-              <div className="stat-label">Sections</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '20px 0', padding: '0 20px' }}>
-        <h3 style={{ margin: 0 }}>📋 Sections</h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {syncMessage && (
-            <span style={{ 
-              padding: '8px 16px', 
-              borderRadius: '6px', 
-              backgroundColor: syncMessage.includes('✓') ? '#d4edda' : syncMessage.includes('✗') ? '#f8d7da' : '#fff3cd',
-              color: syncMessage.includes('✓') ? '#155724' : syncMessage.includes('✗') ? '#721c24' : '#856404',
-              fontSize: '14px',
-              fontWeight: '500'
-            }}>
-              {syncMessage}
-            </span>
-          )}
-          <button 
-            onClick={() => exportDashboardPDF(sections)}
-            style={{
-              padding: '10px 20px',
-              backgroundColor: '#e74c3c',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '600'
-            }}
-          >
-            📄 Télécharger PDF
-          </button>
-          <button 
-            onClick={handleSync}
-            disabled={syncing}
-            style={{
-              padding: '10px 20px',
-              backgroundColor: syncing ? '#95a5a6' : '#3498db',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              cursor: syncing ? 'not-allowed' : 'pointer',
-              fontSize: '14px',
-              fontWeight: '600',
+      )}
+      {menuOpen && (
+        <div onClick={() => setMenuOpen(false)} style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: '#0003', zIndex: 15 }} />
+      )}
+      <div style={{ maxWidth: 1400, margin: '0 auto', paddingTop: 12, paddingLeft: 12, paddingRight: 12 }}>
+        <h1 style={{ fontWeight: 700, fontSize: 24, color: '#222', marginBottom: 8, textAlign: 'center', letterSpacing: 0.5, lineHeight: 1.1 }}>Gestion Scolaire</h1>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'flex-start', minHeight: 200 }}>
+          {SECTIONS.map((section) => (
+            <section key={section.id} style={{
+              background: '#f3f4f6',
+              border: '1px solid #cbd5e1',
+              borderRadius: 3,
+              boxShadow: 'none',
+              padding: '8px 18px 8px 18px',
+              minWidth: 0,
+              flex: '1 1 0',
+              margin: 0,
               display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            <span style={{ fontSize: '18px' }}>🔄</span>
-            {syncing ? 'Synchronisation...' : 'Synchroniser'}
-          </button>
-        </div>
-      </div>
-
-      <div className="sections-grid">
-        {sections.map(section => (
-          <div key={section.id} className="section-card" style={{ borderTopColor: section.color }}>
-            <div className="section-header" style={{ background: section.color }}>
-              <span className="section-icon">{section.icon}</span>
-              <h3>{section.name}</h3>
-            </div>
-            
-            <div className="section-content">
-              <div className="section-stats">
-                <div><strong>{section.students}</strong> élèves</div>
-                <div><strong>{section.teachers}</strong> enseignants</div>
+              flexDirection: 'column',
+              alignItems: 'stretch',
+              maxWidth: 420,
+              height: 'auto'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: 4, borderBottom: '1px solid #e5e7eb', paddingBottom: 2 }}>
+                {section.icon}
+                <span style={{ fontWeight: 500, fontSize: 13, color: '#555', letterSpacing: 0.5, textTransform: 'uppercase', marginLeft: 2 }}>{section.name}</span>
               </div>
-              
-              <div className="classes-list">
+              <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 8, width: '100%', marginLeft: 0, justifyContent: 'flex-start' }}>
                 {section.classes.map((cls, idx) => (
-                  <div 
-                    key={idx} 
-                    className="class-item"
-                    onClick={() => handleSelectClass(section.name, cls)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <span className="class-bullet">•</span> {cls}
-                  </div>
+                  <ClassButton
+                    key={cls}
+                    label={cls}
+                    refProp={section.id === SECTIONS[0].id && idx === 0 ? firstBtnRef : null}
+                    selected={selected.section === section.id && selected.classe === cls}
+                    onSelect={() => handleClassClick(section.id, cls)}
+                  />
                 ))}
               </div>
-            </div>
-          </div>
-        ))}
+            </section>
+          ))}
+        </div>
       </div>
     </div>
+  );
+}
+
+// Bouton classe accessible avec états visuels
+function ClassButton({ label, refProp, selected, onSelect }) {
+  const [isFocused, setFocused] = useState(false);
+  const [isHovered, setHovered] = useState(false);
+
+  return (
+    <button
+      ref={refProp}
+      type="button"
+      tabIndex={0}
+      aria-pressed={selected}
+      onClick={onSelect}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          onSelect();
+        }
+      }}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        minWidth: 54,
+        minHeight: 20,
+        padding: '2px 10px',
+        borderRadius: 3,
+        border: selected ? '2px solid #2563eb' : isFocused ? '2px solid #f59e42' : '1px solid #cbd5e1',
+        background: selected ? '#e0e7ef' : isHovered ? '#f1f5f9' : '#f6f7fa',
+        color: selected ? '#1e3a8a' : '#222',
+        fontWeight: 600,
+        fontSize: 14,
+        cursor: 'pointer',
+        outline: isFocused ? '2px solid #f59e42' : 'none',
+        transition: 'background 0.15s, border 0.15s, color 0.15s, outline 0.15s',
+        textAlign: 'center',
+        boxShadow: 'none',
+        userSelect: 'none',
+        appearance: 'none',
+        letterSpacing: 0.2,
+      }}
+    >
+      {label}
+    </button>
   );
 }

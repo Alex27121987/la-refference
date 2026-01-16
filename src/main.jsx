@@ -9,8 +9,11 @@ if (removedPages.includes(window.location.pathname)) {
   window.location.replace('/pages/finance/situation-removed.html')
 }
 
+import { BrowserRouter } from 'react-router-dom';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </StrictMode>,
 )
